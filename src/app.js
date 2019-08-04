@@ -4,31 +4,46 @@
 
 import React from 'react';
 import { SafeAreaView, StyleSheet } from 'react-native';
-import { TapGestureHandler, State } from 'react-native-gesture-handler';
+import { PanGestureHandler, State } from 'react-native-gesture-handler';
 import Animated from 'react-native-reanimated';
 import { colors } from './themes';
 
-const { View, event, Value, cond, eq } = Animated;
+const { View, event, Value, eq, cond, set } = Animated;
 
 class App extends React.Component {
   constructor(props) {
     super(props);
+    this.translateX = new Value(0);
+    const dragX = new Value(0);
     const state = new Value(-1);
-    this.onStateChange = event([
+    this.onGestureEvent = event([
       {
-        nativeEvent: { state },
-      },
+        nativeEvent: { translationX: dragX, state }
+      }
     ]);
 
-    this._opacity = cond(eq(state, State.BEGAN), 0.3, 1);
+    const transX = new Value();
+    this.translateX = cond(
+      eq(state, State.ACTIVE),
+      [set(transX, dragX), transX],
+      [set(transX, 0), transX]
+    );
   }
 
   render() {
     return (
       <SafeAreaView style={styles.container}>
-        <TapGestureHandler onHandlerStateChange={this.onStateChange}>
-          <View style={[styles.box, { opacity: this._opacity }]} />
-        </TapGestureHandler>
+        <PanGestureHandler
+          onGestureEvent={this.onGestureEvent}
+          onHandlerStateChange={this.onGestureEvent}
+        >
+          <View
+            style={[
+              styles.box,
+              { transform: [{ translateX: this.translateX }] }
+            ]}
+          />
+        </PanGestureHandler>
       </SafeAreaView>
     );
   }
