@@ -1,0 +1,65 @@
+{
+  "root": true,
+  "parser": "babel-eslint",
+  "parserOptions": {
+    "ecmaVersion": 2017,
+    "ecmaFeatures": {
+      "jsx": true,
+      "modules": true
+    },
+    "sourceType": "module"
+  },
+  "env": {
+    "react-native/react-native": true,
+    "es6": true
+  },
+  "plugins": [
+    "react",
+    "prettier",
+    "react-native"
+  ],
+  "extends": [
+    "plugin:react/recommended",
+    "plugin:import/errors",
+    "plugin:prettier/recommended",
+    "prettier/react",
+    "prettier/standard",
+    "prettier"
+  ],
+  "rules": {
+    "curly": ["warn", "all"],
+    "no-multi-spaces": ["warn", { "ignoreEOLComments": false }],
+    "prettier/prettier": ["error"],
+    "react/jsx-uses-react": "warn",
+    "linebreak-style": ["error", "unix"],
+    "newline-after-var": ["warn", "always"],
+    "no-unused-vars": ["error", { "argsIgnorePattern": "^_" }],
+    "global-require": "off",
+    "react/prop-types": 0,
+    "no-unreachable": ["warn"],
+    "eol-last": ["warn", "always"],
+    "arrow-body-style": ["error", "as-needed"],
+    "no-debugger": "warn",
+    "no-multiple-empty-lines": ["warn", { "max": 2, "maxBOF": 0, "maxEOF": 1 }],
+    "react/display-name": 0,
+    "quotes": ["warn", "single", { "avoidEscape": true }],
+    "no-console": 0,
+    "no-undef": 2,
+    "prefer-const": 2,
+    "import/order": [
+      "warn",
+      {
+        "groups": ["external", "internal"]
+      }
+    ],
+    "import/no-extraneous-dependencies": ["warn"]
+  },
+
+  "settings": {
+    "react": {
+      "version": "16.8.6"
+    },
+    "globals": {
+    }
+  }
+}
