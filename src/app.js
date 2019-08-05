@@ -74,6 +74,8 @@ class App extends React.Component {
   render() {
     return (
       <SafeAreaView style={styles.container}>
+        <View style={[styles.like, styles.dropArea]} />
+        <View style={[styles.dislike, styles.dropArea]} />
         <PanGestureHandler
           onGestureEvent={this.onGestureEvent}
           onHandlerStateChange={this.onGestureEvent}
@@ -97,6 +99,7 @@ class App extends React.Component {
 
 const styles = StyleSheet.create({
   container: {
+    position: 'relative',
     backgroundColor: colors.primary,
     alignItems: 'stretch',
     justifyContent: 'center',
@@ -104,7 +107,22 @@ const styles = StyleSheet.create({
   },
   box: {
     backgroundColor: colors.light,
-    flex: 1,
+    flex: 1
+  },
+  dropArea: {
+    position: 'absolute',
+    width: '25%',
+    height: '100%',
+    top: 0,
+    bottom: 0
+  },
+  like: {
+    backgroundColor: 'green',
+    right: 0
+  },
+  dislike: {
+    backgroundColor: 'red',
+    left: 0
   }
 })
 
