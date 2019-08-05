@@ -1,9 +1,7 @@
 import Animated from 'react-native-reanimated'
-// import { State } from 'react-native-gesture-handler'
 
 const {
   set,
-  // eq,
   cond,
   clockRunning,
   Value,

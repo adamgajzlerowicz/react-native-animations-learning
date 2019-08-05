@@ -98,22 +98,13 @@ class App extends React.Component {
 const styles = StyleSheet.create({
   container: {
     backgroundColor: colors.primary,
-    alignItems: 'center',
+    alignItems: 'stretch',
     justifyContent: 'center',
     flex: 1
   },
   box: {
-    transform: [
-      {
-        translateX: 200
-      },
-      {
-        translateY: 200
-      }
-    ],
     backgroundColor: colors.light,
-    width: 100,
-    height: 100
+    flex: 1,
   }
 })
 
