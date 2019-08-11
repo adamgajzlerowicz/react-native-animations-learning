@@ -31,26 +31,22 @@ class App extends React.Component {
         }
       }
     ])
-
-    const clockX = new Clock()
     const transX = new Value()
+    const transY = new Value()
 
     this.translateX = cond(
       eq(gestureState, State.ACTIVE),
-      [stopClock(clockX), set(transX, dragX), transX],
-      [set(transX, new Value(0))]
+      [set(transX, dragX), transX],
+      [
+        cond(eq(gestureState, State.END), call([transX, transY], this.onDrop)),
+        set(transX, new Value(0))
+      ]
     )
-
-    const clockY = new Clock()
-    const transY = new Value()
 
     this.translateY = cond(
       eq(gestureState, State.ACTIVE),
-      [stopClock(clockY), set(transY, dragY), transY],
-      [
-        cond(eq(gestureState, State.END), call([transX, transY], this.onDrop)),
-        set(transY, new Value(0))
-      ]
+      [set(transY, dragY), transY],
+      [set(transY, new Value(0))]
     )
   }
 
