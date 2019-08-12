@@ -8,14 +8,26 @@ import { PanGestureHandler, State } from 'react-native-gesture-handler'
 import Animated from 'react-native-reanimated'
 import { colors } from './themes'
 
-const { View, event, Value, eq, cond, set, Clock, stopClock, call } = Animated
+const {
+  View,
+  event,
+  Value,
+  eq,
+  cond,
+  set,
+  Clock,
+  stopClock,
+  call,
+  divide,
+  diff,
+  add,
+  multiply
+} = Animated
 
 class App extends React.Component {
   constructor(props) {
     super(props)
     this.onDrop = this.onDrop.bind(this)
-    this.translateX = new Value(0)
-    this.translateY = new Value(0)
     const dragX = new Value(0)
     const dragY = new Value(0)
     const gestureState = new Value(-1)
@@ -31,8 +43,12 @@ class App extends React.Component {
         }
       }
     ])
+
     const transX = new Value()
     const transY = new Value()
+
+    // const clock = new Clock()
+    // const dt = divide(diff(clock), 1000)
 
     this.translateX = cond(
       eq(gestureState, State.ACTIVE),
@@ -48,19 +64,14 @@ class App extends React.Component {
       [set(transY, dragY), transY],
       [set(transY, new Value(0))]
     )
+    this.state = {
+      isRed: false
+    }
   }
 
   onDrop = ([x, y]) => {
+    this.setState({ isRed: true })
     console.log(x, y)
-  }
-
-  react = e => {
-    const { width, height, x, y } = e.nativeEvent.layout
-
-    this.top = y
-    this.bottom = y + height
-    this.left = x
-    this.right = x + width
   }
 
   render() {
@@ -77,8 +88,11 @@ class App extends React.Component {
               styles.box,
               {
                 transform: [
-                  { translateX: this.translateX },
-                  { translateY: this.translateY }
+                  {
+                    translateX: this.translateX,
+                    translateY: this.translateY,
+                    rotate: multiply(this.translateX, 0.001)
+                  }
                 ]
               }
             ]}
