@@ -28,8 +28,8 @@ const {
 } = Animated
 
 const interaction = (dragX, transY, gestureState, onDrop) => {
-  const POSITION_THRESHOLD = 1
-  const VELOCITY = 100
+  const POSITION_THRESHOLD = 10
+  const VELOCITY = 1000
 
   const transX = new Value()
   const dragging = new Value(false)
