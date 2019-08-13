@@ -17,12 +17,42 @@ const {
   set,
   Clock,
   stopClock,
+  startClock,
   call,
   divide,
   diff,
   add,
+  and,
   multiply
 } = Animated
+
+const interaction = (dragX, transY, gestureState, onDrop) => {
+  const transX = new Value()
+  const dragging = new Value(false)
+
+  const clock = new Clock()
+  const dt = divide(diff(clock), 1000)
+
+  return cond(
+    eq(gestureState, State.ACTIVE),
+    [
+      cond(eq(dragging, false), set(dragging, true)),
+      set(transX, dragX),
+      stopClock(clock),
+      dt,
+      transX
+    ],
+    [
+      cond(
+        and(eq(gestureState, State.END), eq(dragging, true)),
+        call([transX, transY], onDrop)
+      ),
+      set(dragging, false),
+      startClock(clock),
+      set(transX, dt)
+    ]
+  )
+}
 
 class App extends React.Component {
   constructor(props) {
@@ -44,33 +74,18 @@ class App extends React.Component {
       }
     ])
 
-    const transX = new Value()
     const transY = new Value()
-
-    // const clock = new Clock()
-    // const dt = divide(diff(clock), 1000)
-
-    this.translateX = cond(
-      eq(gestureState, State.ACTIVE),
-      [set(transX, dragX), transX],
-      [
-        cond(eq(gestureState, State.END), call([transX, transY], this.onDrop)),
-        set(transX, new Value(0))
-      ]
-    )
 
     this.translateY = cond(
       eq(gestureState, State.ACTIVE),
       [set(transY, dragY), transY],
-      [set(transY, new Value(0))]
+      [set(transY, 0)]
     )
-    this.state = {
-      isRed: false
-    }
+
+    this.translateX = interaction(dragX, transY, gestureState, this.onDrop)
   }
 
   onDrop = ([x, y]) => {
-    this.setState({ isRed: true })
     console.log(x, y)
   }
 
@@ -90,8 +105,8 @@ class App extends React.Component {
                 transform: [
                   {
                     translateX: this.translateX,
-                    translateY: this.translateY,
-                    rotate: multiply(this.translateX, 0.001)
+                    translateY: this.translateY
+                    // rotate: multiply(this.translateX, 0.0009)
                   }
                 ]
               }
