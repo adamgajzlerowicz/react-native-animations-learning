@@ -3,7 +3,7 @@
  */
 
 import React from 'react'
-import { SafeAreaView, StyleSheet } from 'react-native'
+import { SafeAreaView, StyleSheet, Image } from 'react-native'
 import { PanGestureHandler, State } from 'react-native-gesture-handler'
 import Animated from 'react-native-reanimated'
 import { colors } from './themes'
@@ -31,7 +31,7 @@ const interaction = (dragX, transY, gestureState, onDrop) => {
   const POSITION_THRESHOLD = 10
   const VELOCITY = 1000
 
-  const transX = new Value()
+  const transX = new Value(0)
   const dragging = new Value(false)
   const start = new Value(0)
   const velocity = new Value(0)
@@ -70,8 +70,7 @@ const interaction = (dragX, transY, gestureState, onDrop) => {
 class App extends React.Component {
   constructor(props) {
     super(props)
-    this.onDrop = this.onDrop.bind(this)
-    const dragX = new Value(0)
+    const dragX = new Value()
     const dragY = new Value(0)
     const gestureState = new Value(-1)
     const dragVX = new Value(0)
@@ -124,7 +123,9 @@ class App extends React.Component {
                 ]
               }
             ]}
-          />
+          >
+            <Image source={require('./image.png')} style={styles.background} />
+          </View>
         </PanGestureHandler>
       </SafeAreaView>
     )
@@ -132,6 +133,11 @@ class App extends React.Component {
 }
 
 const styles = StyleSheet.create({
+  background: {
+    width: '100%',
+    height: '100%',
+    resizeMode: 'cover'
+  },
   container: {
     position: 'relative',
     backgroundColor: colors.primary,
