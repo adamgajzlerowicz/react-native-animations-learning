@@ -23,12 +23,18 @@ const {
   diff,
   add,
   and,
-  multiply
+  multiply,
+  lessThan
 } = Animated
 
 const interaction = (dragX, transY, gestureState, onDrop) => {
+  const POSITION_THRESHOLD = 1
+  const VELOCITY = 100
+
   const transX = new Value()
   const dragging = new Value(false)
+  const start = new Value(0)
+  const velocity = new Value(0)
 
   const clock = new Clock()
   const dt = divide(diff(clock), 1000)
@@ -36,11 +42,10 @@ const interaction = (dragX, transY, gestureState, onDrop) => {
   return cond(
     eq(gestureState, State.ACTIVE),
     [
-      cond(eq(dragging, false), set(dragging, true)),
-      set(transX, dragX),
+      cond(eq(dragging, false), [set(dragging, true), set(start, transX)]),
       stopClock(clock),
       dt,
-      transX
+      set(transX, add(dragX, start))
     ],
     [
       cond(
@@ -49,7 +54,15 @@ const interaction = (dragX, transY, gestureState, onDrop) => {
       ),
       set(dragging, false),
       startClock(clock),
-      set(transX, dt)
+      set(velocity, cond(lessThan(transX, 0), VELOCITY, -VELOCITY)),
+      cond(
+        and(
+          lessThan(transX, POSITION_THRESHOLD),
+          lessThan(-POSITION_THRESHOLD, transX)
+        ),
+        [stopClock(clock), set(velocity, 0), set(transX, 0)]
+      ),
+      set(transX, add(transX, multiply(velocity, dt)))
     ]
   )
 }
@@ -105,8 +118,8 @@ class App extends React.Component {
                 transform: [
                   {
                     translateX: this.translateX,
-                    translateY: this.translateY
-                    // rotate: multiply(this.translateX, 0.0009)
+                    translateY: this.translateY,
+                    rotate: multiply(this.translateX, 0.0009)
                   }
                 ]
               }
