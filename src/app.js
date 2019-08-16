@@ -46,6 +46,8 @@ class App extends React.Component {
   dragY = new Value(0)
   isLikingOpacity = new Value(0)
   isDislikingOpacity = new Value(0)
+  isDislikingInfoOpacity = new Value(0)
+  isLikingInfoOpacity = new Value(1)
 
   onGestureEvent = event([
     {
@@ -56,7 +58,6 @@ class App extends React.Component {
       }
     }
   ])
-
   constructor(props) {
     super(props)
 
@@ -85,39 +86,62 @@ class App extends React.Component {
           onGestureEvent={this.onGestureEvent}
           onHandlerStateChange={this.onGestureEvent}
         >
-          <View
-            style={[
-              styles.box,
-              {
-                transform: [
+          <View style={styles.container}>
+            <View
+              style={[
+                styles.likeInfo,
+                styles.dislikingInfo,
+                {
+                  opacity: this.isDislikingInfoOpacity
+                }
+              ]}
+            />
+            <View
+              style={[
+                styles.likeInfo,
+                styles.likingInfo,
+                {
+                  opacity: this.isLikingInfoOpacity
+                }
+              ]}
+            />
+            <View
+              style={[
+                styles.box,
+                {
+                  transform: [
+                    {
+                      translateX: multiply(this.translateX, 1.5),
+                      translateY: this.translateY,
+                      rotate: multiply(this.translateX, 0.0009)
+                    }
+                  ]
+                }
+              ]}
+            >
+              <Image
+                source={require('./image.png')}
+                style={styles.background}
+              />
+              <View
+                style={[
+                  styles.overlay,
+                  styles.likingOverlay,
                   {
-                    translateX: multiply(this.translateX, 1.5),
-                    translateY: this.translateY,
-                    rotate: multiply(this.translateX, 0.0009)
+                    opacity: this.isLikingOpacity
                   }
-                ]
-              }
-            ]}
-          >
-            <Image source={require('./image.png')} style={styles.background} />
-            <View
-              style={[
-                styles.overlay,
-                styles.likingOverlay,
-                {
-                  opacity: this.isLikingOpacity
-                }
-              ]}
-            />
-            <View
-              style={[
-                styles.overlay,
-                styles.dislikingOverlay,
-                {
-                  opacity: this.isDislikingOpacity
-                }
-              ]}
-            />
+                ]}
+              />
+              <View
+                style={[
+                  styles.overlay,
+                  styles.dislikingOverlay,
+                  {
+                    opacity: this.isDislikingOpacity
+                  }
+                ]}
+              />
+            </View>
           </View>
         </PanGestureHandler>
       </SafeAreaView>
@@ -126,6 +150,19 @@ class App extends React.Component {
 }
 
 const styles = StyleSheet.create({
+  likeInfo: {
+    top: 0,
+    left: 0,
+    width: '100%',
+    height: '100%',
+    position: 'absolute'
+  },
+  likingInfo: {
+    backgroundColor: colors.green
+  },
+  dislikingInfo: {
+    backgroundColor: colors.red
+  },
   overlay: {
     top: 0,
     left: 0,
