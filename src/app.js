@@ -5,10 +5,14 @@
 import React from 'react'
 import { SafeAreaView, Dimensions, StyleSheet, Image } from 'react-native'
 import { PanGestureHandler, State } from 'react-native-gesture-handler'
-import Animated, { Easing } from 'react-native-reanimated'
-import { colors } from './themes'
+import Animated from 'react-native-reanimated'
 
-const deviceWidth = Dimensions.get('window').width
+import { colors } from './themes'
+import {
+  interaction,
+  getIsLikingValue,
+  getIsDislikingValue
+} from './animations'
 
 const {
   View,
@@ -35,59 +39,13 @@ const {
   timing
 } = Animated
 
-const startAnimationClock = (clock, state, startValue) =>
-  block([
-    set(state.finished, 0),
-    set(state.time, 0),
-    set(state.position, startValue),
-    set(state.frameTime, 0),
-
-    startClock(clock)
-  ])
-
-const interaction = ({ gestureValue, gestureState }) => {
-  const returnValue = new Value(0)
-  const clock = new Clock()
-  const isDragging = new Value(false)
-  const state = {
-    finished: new Value(0),
-    position: new Value(0),
-    time: new Value(0),
-    frameTime: new Value(0)
-  }
-
-  const config = {
-    duration: 200,
-    toValue: new Value(0),
-    easing: Easing.inOut(Easing.ease)
-  }
-
-  return block([
-    cond(
-      eq(gestureState, State.ACTIVE),
-      [set(isDragging, true), set(returnValue, gestureValue)],
-      [
-        cond(eq(isDragging, true), [
-          set(isDragging, false),
-          startAnimationClock(clock, state, gestureValue)
-        ])
-      ]
-    ),
-    cond(clockRunning(clock), [
-      timing(clock, state, config),
-      set(returnValue, state.position),
-      cond(state.finished, stopClock(clock))
-    ]),
-    returnValue
-  ])
-}
-
 class App extends React.Component {
   gestureState = new Value(-1)
 
   dragX = new Value(0)
   dragY = new Value(0)
-  opacity = new Value(0)
+  isLikingOpacity = new Value(0)
+  isDislikingOpacity = new Value(0)
 
   onGestureEvent = event([
     {
@@ -106,17 +64,14 @@ class App extends React.Component {
 
     this.translateX = interaction({ gestureValue: dragX, gestureState })
     this.translateY = interaction({ gestureValue: dragY, gestureState })
-    this.opacity = block([
-      debug('i am here', new Value('meh')),
-      cond(
-        and(
-          eq(gestureState, State.ACTIVE),
-          greaterThan(dragX, deviceWidth / 6)
-        ),
-        [new Value(0.7)],
-        [new Value(0)]
-      )
-    ])
+    this.isLikingOpacity = getIsLikingValue({
+      gestureState,
+      dragValue: dragX
+    })
+    this.isDislikingOpacity = getIsDislikingValue({
+      gestureState,
+      dragValue: dragX
+    })
   }
 
   onDrop = ([x, y]) => {
@@ -148,8 +103,18 @@ class App extends React.Component {
             <View
               style={[
                 styles.overlay,
+                styles.likingOverlay,
                 {
-                  opacity: this.opacity
+                  opacity: this.isLikingOpacity
+                }
+              ]}
+            />
+            <View
+              style={[
+                styles.overlay,
+                styles.dislikingOverlay,
+                {
+                  opacity: this.isDislikingOpacity
                 }
               ]}
             />
@@ -166,8 +131,13 @@ const styles = StyleSheet.create({
     left: 0,
     width: '100%',
     height: '100%',
-    position: 'absolute',
+    position: 'absolute'
+  },
+  likingOverlay: {
     backgroundColor: colors.green
+  },
+  dislikingOverlay: {
+    backgroundColor: colors.red
   },
   background: {
     width: '100%',
