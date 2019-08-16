@@ -24,6 +24,7 @@ const {
   diff,
   add,
   and,
+  greaterThan,
   neq,
   multiply,
   lessThan,
@@ -84,6 +85,7 @@ class App extends React.Component {
 
   dragX = new Value(0)
   dragY = new Value(0)
+  opacity = new Value(0)
 
   onGestureEvent = event([
     {
@@ -102,6 +104,14 @@ class App extends React.Component {
 
     this.translateX = interaction({ gestureValue: dragX, gestureState })
     this.translateY = interaction({ gestureValue: dragY, gestureState })
+    this.opacity = block([
+      debug('i am here', new Value('meh')),
+      cond(
+        and(eq(gestureState, State.ACTIVE), greaterThan(dragX, 130)),
+        [new Value(1)],
+        [new Value(0)]
+      )
+    ])
   }
 
   onDrop = ([x, y]) => {
@@ -130,6 +140,14 @@ class App extends React.Component {
             ]}
           >
             <Image source={require('./image.png')} style={styles.background} />
+            <View
+              style={[
+                styles.overlay,
+                {
+                  opacity: this.opacity
+                }
+              ]}
+            />
           </View>
         </PanGestureHandler>
       </SafeAreaView>
@@ -138,6 +156,14 @@ class App extends React.Component {
 }
 
 const styles = StyleSheet.create({
+  overlay: {
+    top: 0,
+    left: 0,
+    width: '100%',
+    height: '100%',
+    position: 'absolute',
+    backgroundColor: colors.light
+  },
   background: {
     width: '100%',
     height: '100%',
