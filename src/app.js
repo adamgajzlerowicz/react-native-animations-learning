@@ -3,10 +3,12 @@
  */
 
 import React from 'react'
-import { SafeAreaView, StyleSheet, Image } from 'react-native'
+import { SafeAreaView, Dimensions, StyleSheet, Image } from 'react-native'
 import { PanGestureHandler, State } from 'react-native-gesture-handler'
 import Animated, { Easing } from 'react-native-reanimated'
 import { colors } from './themes'
+
+const deviceWidth = Dimensions.get('window').width
 
 const {
   View,
@@ -107,8 +109,11 @@ class App extends React.Component {
     this.opacity = block([
       debug('i am here', new Value('meh')),
       cond(
-        and(eq(gestureState, State.ACTIVE), greaterThan(dragX, 130)),
-        [new Value(1)],
+        and(
+          eq(gestureState, State.ACTIVE),
+          greaterThan(dragX, deviceWidth / 6)
+        ),
+        [new Value(0.7)],
         [new Value(0)]
       )
     ])
@@ -131,7 +136,7 @@ class App extends React.Component {
               {
                 transform: [
                   {
-                    translateX: this.translateX,
+                    translateX: multiply(this.translateX, 1.5),
                     translateY: this.translateY,
                     rotate: multiply(this.translateX, 0.0009)
                   }
@@ -162,7 +167,7 @@ const styles = StyleSheet.create({
     width: '100%',
     height: '100%',
     position: 'absolute',
-    backgroundColor: colors.light
+    backgroundColor: colors.green
   },
   background: {
     width: '100%',
