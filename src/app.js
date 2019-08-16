@@ -45,6 +45,7 @@ const startAnimationClock = (clock, state, startValue) =>
 const interaction = ({ gestureValue, gestureState }) => {
   const returnValue = new Value(0)
   const clock = new Clock()
+  const isDragging = new Value(false)
   const state = {
     finished: new Value(0),
     position: new Value(0),
@@ -61,10 +62,12 @@ const interaction = ({ gestureValue, gestureState }) => {
   return block([
     cond(
       eq(gestureState, State.ACTIVE),
-      [set(returnValue, gestureValue)],
+      [set(isDragging, true), set(returnValue, gestureValue)],
       [
-        debug('hello', state.finished),
-        startAnimationClock(clock, state, gestureValue)
+        cond(eq(isDragging, true), [
+          set(isDragging, false),
+          startAnimationClock(clock, state, gestureValue)
+        ])
       ]
     ),
     cond(clockRunning(clock), [
@@ -98,7 +101,6 @@ class App extends React.Component {
     const { dragY, gestureState, dragX } = this
 
     this.translateX = interaction({ gestureValue: dragX, gestureState })
-    // this.translateX = new Value(0)
     this.translateY = interaction({ gestureValue: dragY, gestureState })
   }
 
