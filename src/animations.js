@@ -59,7 +59,7 @@ const startAnimationClock = (clock, state, startValue) =>
     startClock(clock)
   ])
 
-export const interaction = ({ gestureValue, gestureState }) => {
+export const dragInteraction = ({ gestureValue, gestureState }) => {
   const returnValue = new Value(0)
   const clock = new Clock()
   const isDragging = new Value(false)

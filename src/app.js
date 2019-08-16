@@ -9,7 +9,7 @@ import Animated from 'react-native-reanimated'
 
 import { colors } from './themes'
 import {
-  interaction,
+  dragInteraction,
   getIsLikingValue,
   getIsDislikingValue
 } from './animations'
@@ -62,8 +62,8 @@ class App extends React.Component {
 
     const { dragY, gestureState, dragX } = this
 
-    this.translateX = interaction({ gestureValue: dragX, gestureState })
-    this.translateY = interaction({ gestureValue: dragY, gestureState })
+    this.translateX = dragInteraction({ gestureValue: dragX, gestureState })
+    this.translateY = dragInteraction({ gestureValue: dragY, gestureState })
     this.isLikingOpacity = getIsLikingValue({
       gestureState,
       dragValue: dragX
