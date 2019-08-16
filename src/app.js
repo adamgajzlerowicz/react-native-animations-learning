@@ -24,6 +24,7 @@ const {
   diff,
   add,
   and,
+  neq,
   multiply,
   lessThan,
   block,
@@ -31,10 +32,19 @@ const {
   timing
 } = Animated
 
-const interaction = (dragX, transY, gestureState, onDrop) => {
-  const transX = new Value(0)
-  const clock = new Clock()
+const startAnimationClock = (clock, state, startValue) =>
+  block([
+    set(state.finished, 0),
+    set(state.time, 0),
+    set(state.position, startValue),
+    set(state.frameTime, 0),
 
+    startClock(clock)
+  ])
+
+const interaction = ({ gestureValue, gestureState }) => {
+  const returnValue = new Value(0)
+  const clock = new Clock()
   const state = {
     finished: new Value(0),
     position: new Value(0),
@@ -51,25 +61,18 @@ const interaction = (dragX, transY, gestureState, onDrop) => {
   return block([
     cond(
       eq(gestureState, State.ACTIVE),
-      [set(transX, dragX)],
+      [set(returnValue, gestureValue)],
       [
-        cond(eq(gestureState, State.END), [
-          set(gestureState, -1),
-          set(state.finished, 0),
-          set(state.time, 0),
-          set(state.position, transX),
-          set(state.frameTime, 0),
-
-          startClock(clock)
-        ])
+        debug('hello', state.finished),
+        startAnimationClock(clock, state, gestureValue)
       ]
     ),
     cond(clockRunning(clock), [
       timing(clock, state, config),
-      set(transX, state.position),
+      set(returnValue, state.position),
       cond(state.finished, stopClock(clock))
     ]),
-    transX
+    returnValue
   ])
 }
 
@@ -78,7 +81,7 @@ class App extends React.Component {
 
   dragX = new Value(0)
   dragY = new Value(0)
-  transY = new Value()
+
   onGestureEvent = event([
     {
       nativeEvent: {
@@ -92,15 +95,11 @@ class App extends React.Component {
   constructor(props) {
     super(props)
 
-    const { transY, dragY, gestureState, dragX, onDrop } = this
+    const { dragY, gestureState, dragX } = this
 
-    this.translateY = cond(
-      eq(this.gestureState, State.ACTIVE),
-      [set(transY, dragY), transY]
-      // [set(transY, 0)]
-    )
-
-    this.translateX = interaction(dragX, transY, gestureState, onDrop)
+    this.translateX = interaction({ gestureValue: dragX, gestureState })
+    // this.translateX = new Value(0)
+    this.translateY = interaction({ gestureValue: dragY, gestureState })
   }
 
   onDrop = ([x, y]) => {
