@@ -5,7 +5,7 @@
 import React from 'react'
 import { SafeAreaView, StyleSheet, Image } from 'react-native'
 import { PanGestureHandler, State } from 'react-native-gesture-handler'
-import Animated from 'react-native-reanimated'
+import Animated, { Easing } from 'react-native-reanimated'
 import { colors } from './themes'
 
 const {
@@ -16,6 +16,7 @@ const {
   cond,
   set,
   Clock,
+  clockRunning,
   stopClock,
   startClock,
   call,
@@ -24,77 +25,82 @@ const {
   add,
   and,
   multiply,
-  lessThan
+  lessThan,
+  block,
+  debug,
+  timing
 } = Animated
 
 const interaction = (dragX, transY, gestureState, onDrop) => {
-  const POSITION_THRESHOLD = 10
-  const VELOCITY = 1000
-
   const transX = new Value(0)
-  const dragging = new Value(false)
-  const start = new Value(0)
-  const velocity = new Value(0)
-
   const clock = new Clock()
-  const dt = divide(diff(clock), 1000)
 
-  return cond(
-    eq(gestureState, State.ACTIVE),
-    [
-      cond(eq(dragging, false), [set(dragging, true), set(start, transX)]),
-      stopClock(clock),
-      dt,
-      set(transX, add(dragX, start))
-    ],
-    [
-      cond(
-        and(eq(gestureState, State.END), eq(dragging, true)),
-        call([transX, transY], onDrop)
-      ),
-      set(dragging, false),
-      startClock(clock),
-      set(velocity, cond(lessThan(transX, 0), VELOCITY, -VELOCITY)),
-      cond(
-        and(
-          lessThan(transX, POSITION_THRESHOLD),
-          lessThan(-POSITION_THRESHOLD, transX)
-        ),
-        [stopClock(clock), set(velocity, 0), set(transX, 0)]
-      ),
-      set(transX, add(transX, multiply(velocity, dt)))
-    ]
-  )
+  const state = {
+    finished: new Value(0),
+    position: new Value(0),
+    time: new Value(0),
+    frameTime: new Value(0)
+  }
+
+  const config = {
+    duration: 200,
+    toValue: new Value(0),
+    easing: Easing.inOut(Easing.ease)
+  }
+
+  return block([
+    cond(
+      eq(gestureState, State.ACTIVE),
+      [set(transX, dragX)],
+      [
+        cond(eq(gestureState, State.END), [
+          set(gestureState, -1),
+          set(state.finished, 0),
+          set(state.time, 0),
+          set(state.position, transX),
+          set(state.frameTime, 0),
+
+          startClock(clock)
+        ])
+      ]
+    ),
+    cond(clockRunning(clock), [
+      timing(clock, state, config),
+      set(transX, state.position),
+      cond(state.finished, stopClock(clock))
+    ]),
+    transX
+  ])
 }
 
 class App extends React.Component {
+  gestureState = new Value(-1)
+
+  dragX = new Value(0)
+  dragY = new Value(0)
+  transY = new Value()
+  onGestureEvent = event([
+    {
+      nativeEvent: {
+        translationX: this.dragX,
+        translationY: this.dragY,
+        state: this.gestureState
+      }
+    }
+  ])
+
   constructor(props) {
     super(props)
-    const dragX = new Value()
-    const dragY = new Value(0)
-    const gestureState = new Value(-1)
-    const dragVX = new Value(0)
 
-    this.onGestureEvent = event([
-      {
-        nativeEvent: {
-          translationX: dragX,
-          translationY: dragY,
-          velocityX: dragVX,
-          state: gestureState
-        }
-      }
-    ])
-
-    const transY = new Value()
+    const { transY, dragY, gestureState, dragX, onDrop } = this
 
     this.translateY = cond(
-      eq(gestureState, State.ACTIVE),
-      [set(transY, dragY), transY],
-      [set(transY, 0)]
+      eq(this.gestureState, State.ACTIVE),
+      [set(transY, dragY), transY]
+      // [set(transY, 0)]
     )
 
-    this.translateX = interaction(dragX, transY, gestureState, this.onDrop)
+    this.translateX = interaction(dragX, transY, gestureState, onDrop)
   }
 
   onDrop = ([x, y]) => {
@@ -104,8 +110,6 @@ class App extends React.Component {
   render() {
     return (
       <SafeAreaView style={styles.container}>
-        <View style={[styles.like, styles.dropArea]} />
-        <View style={[styles.dislike, styles.dropArea]} onLayout={this.react} />
         <PanGestureHandler
           onGestureEvent={this.onGestureEvent}
           onHandlerStateChange={this.onGestureEvent}
@@ -148,21 +152,6 @@ const styles = StyleSheet.create({
   box: {
     backgroundColor: colors.light,
     flex: 1
-  },
-  dropArea: {
-    position: 'absolute',
-    width: '25%',
-    height: '100%',
-    top: 0,
-    bottom: 0
-  },
-  like: {
-    backgroundColor: 'green',
-    right: 0
-  },
-  dislike: {
-    backgroundColor: 'red',
-    left: 0
   }
 })
 
