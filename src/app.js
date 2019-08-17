@@ -3,7 +3,7 @@
  */
 
 import React from 'react'
-import { SafeAreaView, StyleSheet, Image, Text } from 'react-native'
+import { StyleSheet, Image, Text } from 'react-native'
 import { PanGestureHandler } from 'react-native-gesture-handler'
 import Animated from 'react-native-reanimated'
 
@@ -14,31 +14,7 @@ import {
   getIsDislikingValue
 } from './animations'
 
-const {
-  View,
-  event,
-  Value,
-  eq,
-  cond,
-  set,
-  Clock,
-  clockRunning,
-  stopClock,
-  startClock,
-  call,
-  divide,
-  diff,
-  add,
-  and,
-  greaterThan,
-  interpolate,
-  neq,
-  multiply,
-  lessThan,
-  block,
-  debug,
-  timing
-} = Animated
+const { View, event, Value, interpolate, multiply } = Animated
 
 class App extends React.Component {
   gestureState = new Value(-1)
