@@ -46,16 +46,19 @@ class App extends React.Component {
       onDislike,
       hasVoted
     })
+
     this.translateY = dragInteraction({
       gestureValue: dragY,
       gestureState,
       hasVoted
     })
+
     this.isLikingOpacity = getIsLikingValue({
       gestureState,
       dragValue: dragX,
       hasVoted
     })
+
     this.isDislikingOpacity = getIsDislikingValue({
       gestureState,
       dragValue: dragX,
