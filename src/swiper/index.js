@@ -3,7 +3,7 @@
  */
 
 import React from 'react'
-import { StyleSheet, Image, Text } from 'react-native'
+import { StyleSheet, Text } from 'react-native'
 import { PanGestureHandler } from 'react-native-gesture-handler'
 import Animated from 'react-native-reanimated'
 
@@ -14,7 +14,7 @@ import {
   getIsDislikingValue
 } from './animations'
 
-const { View, event, Value, interpolate, multiply } = Animated
+const { View, event, Value, interpolate, multiply, Image } = Animated
 
 class App extends React.Component {
   gestureState = new Value(-1)
@@ -24,6 +24,8 @@ class App extends React.Component {
   isLikingOpacity = new Value(0)
   isDislikingOpacity = new Value(0)
   hasVoted = new Value(false)
+  interactiveItem = new Value()
+  items = new Value()
 
   onGestureEvent = event([
     {
@@ -37,7 +39,10 @@ class App extends React.Component {
   constructor(props) {
     super(props)
     const { dragY, gestureState, dragX, hasVoted } = this
-    const { onLike, onDislike } = this.props
+    const { onLike, onDislike, items } = this.props
+
+    this.interactiveItem = new Value(items.pop())
+    this.items = new Value(items)
 
     this.translateX = dragInteraction({
       gestureValue: dragX,
@@ -93,6 +98,15 @@ class App extends React.Component {
               ]}
             />
 
+            <View style={[styles.box]}>
+              <Image
+                source={{
+                  uri: this.items._value[this.items._value.length - 1].url
+                }}
+                style={styles.background}
+              />
+            </View>
+
             <View
               style={[
                 styles.box,
@@ -109,7 +123,7 @@ class App extends React.Component {
             >
               <Image
                 source={{
-                  uri: this.props.items[0].url
+                  uri: this.interactiveItem._value.url
                 }}
                 style={styles.background}
               />
@@ -221,8 +235,11 @@ const styles = StyleSheet.create({
     flex: 1
   },
   box: {
-    backgroundColor: colors.light,
-    flex: 1
+    top: 0,
+    left: 0,
+    width: '100%',
+    height: '100%',
+    position: 'absolute'
   }
 })
 
