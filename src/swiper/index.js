@@ -108,7 +108,9 @@ class App extends React.Component {
               ]}
             >
               <Image
-                source={require('./image.png')}
+                source={{
+                  uri: this.props.items[0].url
+                }}
                 style={styles.background}
               />
             </View>
