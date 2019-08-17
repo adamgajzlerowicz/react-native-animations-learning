@@ -127,31 +127,47 @@ class App extends React.Component {
 
             <View
               style={[
-                styles.overlay,
-                styles.likingOverlay,
+                styles.overlayContainer,
                 {
-                  opacity: interpolate(this.isLikingOpacity, {
-                    inputRange: [0, 1],
-                    outputRange: [0, 0.7]
-                  })
+                  opacity: this.isLikingOpacity
                 }
               ]}
             >
+              <View
+                style={[
+                  styles.opaqueBackground,
+                  styles.likingOverlay,
+                  {
+                    opacity: interpolate(this.isLikingOpacity, {
+                      inputRange: [0, 1],
+                      outputRange: [0, 0.7]
+                    })
+                  }
+                ]}
+              />
               <Text style={styles.textStyle}>Keep it</Text>
             </View>
 
             <View
               style={[
-                styles.overlay,
-                styles.dislikingOverlay,
+                styles.overlayContainer,
                 {
-                  opacity: interpolate(this.isDislikingOpacity, {
-                    inputRange: [0, 1],
-                    outputRange: [0, 0.7]
-                  })
+                  opacity: this.isDislikingOpacity
                 }
               ]}
             >
+              <View
+                style={[
+                  styles.opaqueBackground,
+                  styles.dislikingOverlay,
+                  {
+                    opacity: interpolate(this.isDislikingOpacity, {
+                      inputRange: [0, 1],
+                      outputRange: [0, 0.7]
+                    })
+                  }
+                ]}
+              />
               <Text style={styles.textStyle}>Return it</Text>
             </View>
           </View>
@@ -181,9 +197,16 @@ const styles = StyleSheet.create({
   dislikingInfo: {
     backgroundColor: colors.red
   },
-  overlay: {
+  overlayContainer: {
     alignItems: 'center',
     justifyContent: 'center',
+    top: 0,
+    left: 0,
+    width: '100%',
+    height: '100%',
+    position: 'absolute'
+  },
+  opaqueBackground: {
     top: 0,
     left: 0,
     width: '100%',
