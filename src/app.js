@@ -59,10 +59,15 @@ class App extends React.Component {
   ])
   constructor(props) {
     super(props)
-
     const { dragY, gestureState, dragX } = this
+    const { onLike, onDislike } = this.props
 
-    this.translateX = dragInteraction({ gestureValue: dragX, gestureState })
+    this.translateX = dragInteraction({
+      gestureValue: dragX,
+      gestureState,
+      onLike,
+      onDislike
+    })
     this.translateY = dragInteraction({ gestureValue: dragY, gestureState })
     this.isLikingOpacity = getIsLikingValue({
       gestureState,
@@ -72,10 +77,6 @@ class App extends React.Component {
       gestureState,
       dragValue: dragX
     })
-  }
-
-  onDrop = ([x, y]) => {
-    console.log(x, y)
   }
 
   render() {
