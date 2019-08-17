@@ -32,7 +32,7 @@ const makeLikingValue = ({ gestureState, condition }) =>
   block([
     cond(
       and(eq(gestureState, State.ACTIVE), condition),
-      [new Value(0.7)],
+      [new Value(1)],
       [new Value(0)]
     )
   ])

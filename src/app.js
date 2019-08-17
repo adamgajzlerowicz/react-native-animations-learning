@@ -3,8 +3,8 @@
  */
 
 import React from 'react'
-import { SafeAreaView, Dimensions, StyleSheet, Image } from 'react-native'
-import { PanGestureHandler, State } from 'react-native-gesture-handler'
+import { SafeAreaView, StyleSheet, Image, Text } from 'react-native'
+import { PanGestureHandler } from 'react-native-gesture-handler'
 import Animated from 'react-native-reanimated'
 
 import { colors } from './themes'
@@ -31,6 +31,7 @@ const {
   add,
   and,
   greaterThan,
+  interpolate,
   neq,
   multiply,
   lessThan,
@@ -46,8 +47,6 @@ class App extends React.Component {
   dragY = new Value(0)
   isLikingOpacity = new Value(0)
   isDislikingOpacity = new Value(0)
-  isDislikingInfoOpacity = new Value(0)
-  isLikingInfoOpacity = new Value(1)
 
   onGestureEvent = event([
     {
@@ -81,7 +80,7 @@ class App extends React.Component {
 
   render() {
     return (
-      <SafeAreaView style={styles.container}>
+      <View style={styles.container}>
         <PanGestureHandler
           onGestureEvent={this.onGestureEvent}
           onHandlerStateChange={this.onGestureEvent}
@@ -92,7 +91,7 @@ class App extends React.Component {
                 styles.likeInfo,
                 styles.dislikingInfo,
                 {
-                  opacity: this.isDislikingInfoOpacity
+                  opacity: this.isDislikingOpacity
                 }
               ]}
             />
@@ -101,10 +100,11 @@ class App extends React.Component {
                 styles.likeInfo,
                 styles.likingInfo,
                 {
-                  opacity: this.isLikingInfoOpacity
+                  opacity: this.isLikingOpacity
                 }
               ]}
             />
+
             <View
               style={[
                 styles.box,
@@ -123,33 +123,51 @@ class App extends React.Component {
                 source={require('./image.png')}
                 style={styles.background}
               />
-              <View
-                style={[
-                  styles.overlay,
-                  styles.likingOverlay,
-                  {
-                    opacity: this.isLikingOpacity
-                  }
-                ]}
-              />
-              <View
-                style={[
-                  styles.overlay,
-                  styles.dislikingOverlay,
-                  {
-                    opacity: this.isDislikingOpacity
-                  }
-                ]}
-              />
+            </View>
+
+            <View
+              style={[
+                styles.overlay,
+                styles.likingOverlay,
+                {
+                  opacity: interpolate(this.isLikingOpacity, {
+                    inputRange: [0, 1],
+                    outputRange: [0, 0.7]
+                  })
+                }
+              ]}
+            >
+              <Text style={styles.textStyle}>Keep it</Text>
+            </View>
+
+            <View
+              style={[
+                styles.overlay,
+                styles.dislikingOverlay,
+                {
+                  opacity: interpolate(this.isDislikingOpacity, {
+                    inputRange: [0, 1],
+                    outputRange: [0, 0.7]
+                  })
+                }
+              ]}
+            >
+              <Text style={styles.textStyle}>Return it</Text>
             </View>
           </View>
         </PanGestureHandler>
-      </SafeAreaView>
+      </View>
     )
   }
 }
 
 const styles = StyleSheet.create({
+  textStyle: {
+    fontFamily: 'Avenir',
+    fontSize: 40,
+    color: colors.white,
+    fontWeight: '500'
+  },
   likeInfo: {
     top: 0,
     left: 0,
@@ -164,6 +182,8 @@ const styles = StyleSheet.create({
     backgroundColor: colors.red
   },
   overlay: {
+    alignItems: 'center',
+    justifyContent: 'center',
     top: 0,
     left: 0,
     width: '100%',
