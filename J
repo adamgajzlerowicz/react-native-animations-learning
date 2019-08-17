@@ -1,2 +1,0 @@
-stty: option requires an argument -- intr
-usage: stty [-a|-e|-g] [-f file] [options]
