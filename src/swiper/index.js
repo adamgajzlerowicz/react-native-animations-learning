@@ -4,7 +4,7 @@
 
 import React from 'react'
 import { StyleSheet, Text, Image } from 'react-native'
-import { PanGestureHandler } from 'react-native-gesture-handler'
+import { PanGestureHandler, State } from 'react-native-gesture-handler'
 import Animated from 'react-native-reanimated'
 
 import { colors } from '../themes'
@@ -46,6 +46,7 @@ class App extends React.Component {
     this.setState({
       items
     })
+    this.gestureState.setValue(State.UNDETERMINED)
   }
 
   constructor(props) {
