@@ -40,7 +40,12 @@ class App extends React.Component {
   ])
 
   onVote = () => {
-    console.log(this.state)
+    // eslint-disable-next-line no-unused-vars
+    const [_oldTopItem, ...items] = this.state.items
+
+    this.setState({
+      items
+    })
   }
 
   constructor(props) {
@@ -85,6 +90,8 @@ class App extends React.Component {
 
   render() {
     const [interactiveItem, backgroundItem] = this.state.items
+
+    console.log(this.state.items)
 
     return (
       <View style={styles.container}>

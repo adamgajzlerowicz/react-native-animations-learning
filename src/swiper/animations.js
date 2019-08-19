@@ -107,14 +107,14 @@ export const dragInteraction = ({
                       set(config.toValue, throwOutDistance),
                       set(config.duration, throwOutSpeed),
                       startCardClock(clock, state, gestureValue),
-                      call([], callback),
+                      call([new Value('liked')], callback),
                       set(hasVoted, true)
                     ],
                     [
                       set(config.toValue, -throwOutDistance),
                       set(config.duration, throwOutSpeed),
                       startCardClock(clock, state, gestureValue),
-                      call([], callback),
+                      call([new Value('disliked')], callback),
                       set(hasVoted, true)
                     ]
                   )
