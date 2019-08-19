@@ -9,7 +9,7 @@ import Animated from 'react-native-reanimated'
 
 import { colors } from '../themes'
 import {
-  dragInteraction,
+  dragInteractionX,
   getIsLikingValue,
   getIsDislikingValue
 } from './animations'
@@ -55,7 +55,7 @@ class App extends React.Component {
 
     this.state.items = items
 
-    this.translateX = dragInteraction({
+    this.translateX = dragInteractionX({
       gestureValue: dragX,
       gestureState,
       reaction: data => {

@@ -61,7 +61,7 @@ const startCardClock = (clock, state, startValue) =>
     startClock(clock)
   ])
 
-export const dragInteraction = ({
+export const dragInteractionX = ({
   gestureValue,
   gestureState,
   reaction,
@@ -101,25 +101,27 @@ export const dragInteraction = ({
                 startCardClock(clock, state, gestureValue)
               ],
               [
+                set(config.duration, throwOutSpeed),
                 cond(
                   eq(hasVoted, false),
-                  cond(
-                    lessThan(0, gestureValue),
-                    [
-                      set(config.toValue, throwOutDistance),
-                      set(config.duration, throwOutSpeed),
-                      startCardClock(clock, state, gestureValue),
-                      call([new Value('liked')], reaction),
-                      set(hasVoted, true)
-                    ],
-                    [
-                      set(config.toValue, -throwOutDistance),
-                      set(config.duration, throwOutSpeed),
-                      startCardClock(clock, state, gestureValue),
-                      call([new Value('disliked')], reaction),
-                      set(hasVoted, true)
-                    ]
-                  )
+
+                  // start throw out animation and give vote
+                  block([
+                    cond(
+                      lessThan(0, gestureValue),
+                      [
+                        set(config.toValue, throwOutDistance),
+                        call([new Value('liked')], reaction),
+                        set(hasVoted, true)
+                      ],
+                      [
+                        set(config.toValue, -throwOutDistance),
+                        call([new Value('disliked')], reaction)
+                      ]
+                    ),
+                    startCardClock(clock, state, gestureValue),
+                    set(hasVoted, true)
+                  ])
                 )
               ]
             )
@@ -131,16 +133,19 @@ export const dragInteraction = ({
       timing(clock, state, config),
       set(returnValue, state.position),
       cond(state.finished, [
-        set(isDragging, false),
         stopClock(clock),
-        set(hasVoted, false),
-        set(returnValue, 0),
-        call([], setNextSlide),
-        set(state.finished, new Value(0)),
-        set(state.position, new Value(0)),
-        set(state.time, new Value(0)),
-        set(state.frameTime, new Value(0)),
-        set(gestureState, new Value(-1))
+        // if vote was given cleanup
+        cond(eq(hasVoted, true), [
+          call([], setNextSlide),
+          set(isDragging, false),
+          set(hasVoted, false),
+          set(returnValue, 0),
+          set(state.finished, new Value(0)),
+          set(state.position, new Value(0)),
+          set(state.time, new Value(0)),
+          set(state.frameTime, new Value(0)),
+          set(gestureState, new Value(-1))
+        ])
       ])
     ]),
     returnValue
