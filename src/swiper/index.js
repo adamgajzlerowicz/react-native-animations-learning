@@ -39,7 +39,7 @@ class App extends React.Component {
     }
   ])
 
-  onVote = () => {
+  setNextSlide = () => {
     // eslint-disable-next-line no-unused-vars
     const [_oldTopItem, ...items] = this.state.items
 
@@ -58,22 +58,25 @@ class App extends React.Component {
     this.translateX = dragInteraction({
       gestureValue: dragX,
       gestureState,
-      callback: data => {
-        this.onVote()
+      reaction: data => {
         callback(data)
+      },
+      setNextSlide: () => {
+        this.setNextSlide()
       },
       hasVoted
     })
 
-    this.translateY = dragInteraction({
-      gestureValue: dragY,
-      gestureState,
-      callback: data => {
-        this.onVote()
-        callback(data)
-      },
-      hasVoted
-    })
+    // this.translateY = dragInteraction({
+    //   gestureValue: dragY,
+    //   gestureState,
+    //   callback: data => {
+    //     // this.onVote()
+    //     // callback(data)
+    //   },
+    //   hasVoted
+    // })
+    this.translateY = new Value(0)
 
     this.isLikingOpacity = getIsLikingValue({
       gestureState,

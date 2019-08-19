@@ -9,7 +9,7 @@ function minTwoDigits(n) {
 
 const items = []
 
-for (let i = 1; i < 4; i++) {
+for (let i = 1; i < 20; i++) {
   items.push({
     id: i,
     url: `https://black-dev-static.s3-eu-west-1.amazonaws.com/flip_pic/seed/women/${minTwoDigits(

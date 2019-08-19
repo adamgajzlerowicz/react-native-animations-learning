@@ -3,6 +3,7 @@ import { State } from 'react-native-gesture-handler'
 import { Dimensions } from 'react-native'
 
 const {
+  debug,
   Value,
   eq,
   cond,
@@ -63,7 +64,8 @@ const startCardClock = (clock, state, startValue) =>
 export const dragInteraction = ({
   gestureValue,
   gestureState,
-  callback,
+  reaction,
+  setNextSlide,
   hasVoted
 }) => {
   const returnValue = new Value(0)
@@ -107,14 +109,14 @@ export const dragInteraction = ({
                       set(config.toValue, throwOutDistance),
                       set(config.duration, throwOutSpeed),
                       startCardClock(clock, state, gestureValue),
-                      call([new Value('liked')], callback),
+                      call([new Value('liked')], reaction),
                       set(hasVoted, true)
                     ],
                     [
                       set(config.toValue, -throwOutDistance),
                       set(config.duration, throwOutSpeed),
                       startCardClock(clock, state, gestureValue),
-                      call([new Value('disliked')], callback),
+                      call([new Value('disliked')], reaction),
                       set(hasVoted, true)
                     ]
                   )
@@ -128,7 +130,18 @@ export const dragInteraction = ({
     cond(clockRunning(clock), [
       timing(clock, state, config),
       set(returnValue, state.position),
-      cond(state.finished, stopClock(clock))
+      cond(state.finished, [
+        set(isDragging, false),
+        stopClock(clock),
+        set(hasVoted, false),
+        set(returnValue, 0),
+        call([], setNextSlide),
+        set(state.finished, new Value(0)),
+        set(state.position, new Value(0)),
+        set(state.time, new Value(0)),
+        set(state.frameTime, new Value(0)),
+        set(gestureState, new Value(-1))
+      ])
     ]),
     returnValue
   ])
