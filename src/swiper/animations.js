@@ -11,7 +11,6 @@ const {
   clockRunning,
   stopClock,
   startClock,
-  log,
   call,
   abs,
   and,
@@ -64,8 +63,7 @@ const startCardClock = (clock, state, startValue) =>
 export const dragInteraction = ({
   gestureValue,
   gestureState,
-  onLike = () => console.log('liked'),
-  onDislike = () => console.log('disliked'),
+  callback,
   hasVoted
 }) => {
   const returnValue = new Value(0)
@@ -109,14 +107,14 @@ export const dragInteraction = ({
                       set(config.toValue, throwOutDistance),
                       set(config.duration, throwOutSpeed),
                       startCardClock(clock, state, gestureValue),
-                      call([], onLike),
+                      call([], callback),
                       set(hasVoted, true)
                     ],
                     [
                       set(config.toValue, -throwOutDistance),
                       set(config.duration, throwOutSpeed),
                       startCardClock(clock, state, gestureValue),
-                      call([], onDislike),
+                      call([], callback),
                       set(hasVoted, true)
                     ]
                   )

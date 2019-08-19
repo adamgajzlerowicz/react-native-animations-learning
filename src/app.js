@@ -20,7 +20,7 @@ for (let i = 1; i < 20; i++) {
 
 export default () => (
   <View style={styles.container}>
-    <Swiper items={items}/>
+    <Swiper items={items} callback={console.log} />
   </View>
 )
 

@@ -3,7 +3,7 @@
  */
 
 import React from 'react'
-import { StyleSheet, Text } from 'react-native'
+import { StyleSheet, Text, Image } from 'react-native'
 import { PanGestureHandler } from 'react-native-gesture-handler'
 import Animated from 'react-native-reanimated'
 
@@ -14,7 +14,7 @@ import {
   getIsDislikingValue
 } from './animations'
 
-const { View, event, Value, interpolate, multiply, Image } = Animated
+const { View, event, Value, interpolate, multiply } = Animated
 
 class App extends React.Component {
   gestureState = new Value(-1)
@@ -24,8 +24,10 @@ class App extends React.Component {
   isLikingOpacity = new Value(0)
   isDislikingOpacity = new Value(0)
   hasVoted = new Value(false)
-  interactiveItem = new Value()
-  items = new Value()
+
+  state = {
+    items: []
+  }
 
   onGestureEvent = event([
     {
@@ -36,25 +38,35 @@ class App extends React.Component {
       }
     }
   ])
+
+  onVote = () => {
+    console.log(this.state)
+  }
+
   constructor(props) {
     super(props)
     const { dragY, gestureState, dragX, hasVoted } = this
-    const { onLike, onDislike, items } = this.props
+    const { callback, items } = this.props
 
-    this.interactiveItem = new Value(items.pop())
-    this.items = new Value(items)
+    this.state.items = items
 
     this.translateX = dragInteraction({
       gestureValue: dragX,
       gestureState,
-      onLike,
-      onDislike,
+      callback: data => {
+        this.onVote()
+        callback(data)
+      },
       hasVoted
     })
 
     this.translateY = dragInteraction({
       gestureValue: dragY,
       gestureState,
+      callback: data => {
+        this.onVote()
+        callback(data)
+      },
       hasVoted
     })
 
@@ -72,6 +84,8 @@ class App extends React.Component {
   }
 
   render() {
+    const [interactiveItem, backgroundItem] = this.state.items
+
     return (
       <View style={styles.container}>
         <PanGestureHandler
@@ -88,6 +102,16 @@ class App extends React.Component {
                 }
               ]}
             />
+
+            <View style={[styles.box]}>
+              <Image
+                source={{
+                  uri: backgroundItem.url
+                }}
+                style={styles.background}
+              />
+            </View>
+
             <View
               style={[
                 styles.likeInfo,
@@ -97,15 +121,6 @@ class App extends React.Component {
                 }
               ]}
             />
-
-            <View style={[styles.box]}>
-              <Image
-                source={{
-                  uri: this.items._value[this.items._value.length - 1].url
-                }}
-                style={styles.background}
-              />
-            </View>
 
             <View
               style={[
@@ -123,7 +138,7 @@ class App extends React.Component {
             >
               <Image
                 source={{
-                  uri: this.interactiveItem._value.url
+                  uri: interactiveItem.url
                 }}
                 style={styles.background}
               />
