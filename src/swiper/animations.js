@@ -1,6 +1,11 @@
 import Animated, { Easing } from 'react-native-reanimated'
 import { State } from 'react-native-gesture-handler'
-import { Dimensions } from 'react-native'
+import {
+  distanceToVote,
+  throwOutSpeed,
+  throwOutDistance,
+  returnSpeed
+} from './constants'
 
 const {
   debug,
@@ -20,11 +25,6 @@ const {
   block,
   timing
 } = Animated
-
-const deviceWidth = Dimensions.get('window').width
-const distanceToVote = deviceWidth / 6
-const throwOutDistance = deviceWidth * 2
-const throwOutSpeed = 500
 
 const makeLikingValue = ({ gestureState, condition, hasVoted }) =>
   cond(
@@ -97,11 +97,12 @@ export const dragInteractionX = ({
               lessThan(abs(gestureValue), distanceToVote),
               [
                 set(isDragging, false),
+                set(config.toValue, 0),
+                // set(config.time, new Value(0)),
                 startCardClock(clock, state, gestureValue)
               ],
               [
                 set(config.duration, throwOutSpeed),
-                debug('gesture', gestureValue),
                 cond(
                   eq(hasVoted, false),
 
@@ -132,18 +133,16 @@ export const dragInteractionX = ({
     cond(clockRunning(clock), [
       timing(clock, state, config),
       cond(state.finished, [
-        stopClock(clock),
         // if vote was given cleanup
+        stopClock(clock),
         cond(eq(hasVoted, true), [
           call([], setNextSlide),
           set(isDragging, false),
           set(hasVoted, false),
+          set(state.finished, 0),
           set(state.position, 0),
-          set(state.finished, new Value(0)),
-          set(state.position, new Value(0)),
-          set(state.time, new Value(0)),
-          set(state.frameTime, new Value(0)),
-          set(gestureState, new Value(-1))
+          set(state.time, 0),
+          set(state.frameTime, 0)
         ])
       ])
     ]),

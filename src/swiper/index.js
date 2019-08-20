@@ -46,6 +46,7 @@ class App extends React.Component {
     this.setState({
       items
     })
+
     this.gestureState.setValue(State.UNDETERMINED)
   }
 
@@ -94,8 +95,6 @@ class App extends React.Component {
 
   render() {
     const [interactiveItem, backgroundItem] = this.state.items
-
-    console.log(this.state.items)
 
     return (
       <View style={styles.container}>
