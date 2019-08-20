@@ -2,9 +2,9 @@ import Animated, { Easing } from 'react-native-reanimated'
 import { State } from 'react-native-gesture-handler'
 import {
   distanceToVote,
-  throwOutSpeed,
+  throwOutDuration,
   throwOutDistance,
-  returnSpeed
+  returnDuration
 } from './constants'
 
 const {
@@ -98,11 +98,11 @@ export const dragInteractionX = ({
               [
                 set(isDragging, false),
                 set(config.toValue, 0),
-                // set(config.time, new Value(0)),
+                set(config.duration, returnDuration),
                 startCardClock(clock, state, gestureValue)
               ],
               [
-                set(config.duration, throwOutSpeed),
+                set(config.duration, throwOutDuration),
                 cond(
                   eq(hasVoted, false),
 
