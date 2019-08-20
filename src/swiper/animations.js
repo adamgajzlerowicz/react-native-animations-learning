@@ -68,7 +68,6 @@ export const dragInteractionX = ({
   setNextSlide,
   hasVoted
 }) => {
-  const returnValue = new Value(0)
   const clock = new Clock()
   const isDragging = new Value(false)
 
@@ -90,7 +89,7 @@ export const dragInteractionX = ({
       eq(hasVoted, false),
       cond(
         eq(gestureState, State.ACTIVE),
-        [set(isDragging, true), set(returnValue, gestureValue)],
+        [set(isDragging, true), set(state.position, gestureValue)],
         [
           cond(
             eq(isDragging, true),
@@ -102,6 +101,7 @@ export const dragInteractionX = ({
               ],
               [
                 set(config.duration, throwOutSpeed),
+                debug('gesture', gestureValue),
                 cond(
                   eq(hasVoted, false),
 
@@ -131,7 +131,6 @@ export const dragInteractionX = ({
     ),
     cond(clockRunning(clock), [
       timing(clock, state, config),
-      set(returnValue, state.position),
       cond(state.finished, [
         stopClock(clock),
         // if vote was given cleanup
@@ -139,7 +138,7 @@ export const dragInteractionX = ({
           call([], setNextSlide),
           set(isDragging, false),
           set(hasVoted, false),
-          set(returnValue, 0),
+          set(state.position, 0),
           set(state.finished, new Value(0)),
           set(state.position, new Value(0)),
           set(state.time, new Value(0)),
@@ -148,6 +147,6 @@ export const dragInteractionX = ({
         ])
       ])
     ]),
-    returnValue
+    state.position
   ])
 }
