@@ -66,30 +66,19 @@ export const dragInteractionX = ({
   gestureState,
   reaction,
   setNextSlide,
-  hasVoted
+  hasVoted,
+  clockConfig,
+  clockState,
+  clock
 }) => {
-  const clock = new Clock()
   const isDragging = new Value(false)
-
-  const state = {
-    finished: new Value(0),
-    position: new Value(0),
-    time: new Value(0),
-    frameTime: new Value(0)
-  }
-
-  const config = {
-    duration: new Value(100),
-    toValue: new Value(0),
-    easing: Easing.inOut(Easing.ease)
-  }
 
   return block([
     cond(
       eq(hasVoted, false),
       cond(
         eq(gestureState, State.ACTIVE),
-        [set(isDragging, true), set(state.position, gestureValue)],
+        [set(isDragging, true), set(clockState.position, gestureValue)],
         [
           cond(
             eq(isDragging, true),
@@ -97,12 +86,12 @@ export const dragInteractionX = ({
               lessThan(abs(gestureValue), distanceToVote),
               [
                 set(isDragging, false),
-                set(config.toValue, 0),
-                set(config.duration, returnDuration),
-                startCardClock(clock, state, gestureValue)
+                set(clockConfig.toValue, 0),
+                set(clockConfig.duration, returnDuration),
+                startCardClock(clock, clockState, gestureValue)
               ],
               [
-                set(config.duration, throwOutDuration),
+                set(clockConfig.duration, throwOutDuration),
                 cond(
                   eq(hasVoted, false),
 
@@ -111,16 +100,16 @@ export const dragInteractionX = ({
                     cond(
                       lessThan(0, gestureValue),
                       [
-                        set(config.toValue, throwOutDistance),
+                        set(clockConfig.toValue, throwOutDistance),
                         call([new Value('liked')], reaction),
                         set(hasVoted, true)
                       ],
                       [
-                        set(config.toValue, -throwOutDistance),
+                        set(clockConfig.toValue, -throwOutDistance),
                         call([new Value('disliked')], reaction)
                       ]
                     ),
-                    startCardClock(clock, state, gestureValue),
+                    startCardClock(clock, clockState, gestureValue),
                     set(hasVoted, true)
                   ])
                 )
@@ -131,21 +120,21 @@ export const dragInteractionX = ({
       )
     ),
     cond(clockRunning(clock), [
-      timing(clock, state, config),
-      cond(state.finished, [
+      timing(clock, clockState, clockConfig),
+      cond(clockState.finished, [
         // if vote was given cleanup
         stopClock(clock),
         cond(eq(hasVoted, true), [
           call([], setNextSlide),
           set(isDragging, false),
           set(hasVoted, false),
-          set(state.finished, 0),
-          set(state.position, 0),
-          set(state.time, 0),
-          set(state.frameTime, 0)
+          set(clockState.finished, 0),
+          // set(clockState.position, 0),
+          set(clockState.time, 0),
+          set(clockState.frameTime, 0)
         ])
       ])
     ]),
-    state.position
+    clockState.position
   ])
 }

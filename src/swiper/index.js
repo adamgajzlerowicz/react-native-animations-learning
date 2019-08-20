@@ -5,7 +5,7 @@
 import React from 'react'
 import { StyleSheet, Text, Image } from 'react-native'
 import { PanGestureHandler, State } from 'react-native-gesture-handler'
-import Animated from 'react-native-reanimated'
+import Animated, { Easing } from 'react-native-reanimated'
 
 import { colors } from '../themes'
 import {
@@ -14,7 +14,7 @@ import {
   getIsDislikingValue
 } from './animations'
 
-const { View, event, Value, interpolate, multiply } = Animated
+const { View, event, Value, interpolate, multiply, Clock } = Animated
 
 class App extends React.Component {
   gestureState = new Value(-1)
@@ -24,6 +24,20 @@ class App extends React.Component {
   isLikingOpacity = new Value(0)
   isDislikingOpacity = new Value(0)
   hasVoted = new Value(false)
+  masterClock = new Clock()
+
+  masterClockState = {
+    finished: new Value(0),
+    position: new Value(0),
+    time: new Value(0),
+    frameTime: new Value(0)
+  }
+
+  masterClockConfig = {
+    duration: new Value(100),
+    toValue: new Value(0),
+    easing: Easing.inOut(Easing.ease)
+  }
 
   state = {
     items: []
@@ -43,16 +57,20 @@ class App extends React.Component {
     // eslint-disable-next-line no-unused-vars
     const [_oldTopItem, ...items] = this.state.items
 
-    this.setState({
-      items
-    })
-
-    this.gestureState.setValue(State.UNDETERMINED)
+    this.setState(
+      {
+        items
+      },
+      () => {
+        this.masterClockState.position.setValue(0)
+      }
+    )
   }
 
   constructor(props) {
     super(props)
     const { dragY, gestureState, dragX, hasVoted } = this
+
     const { callback, items } = this.props
 
     this.state.items = items
@@ -63,10 +81,11 @@ class App extends React.Component {
       reaction: data => {
         callback(data)
       },
-      setNextSlide: () => {
-        this.setNextSlide()
-      },
-      hasVoted
+      setNextSlide: this.setNextSlide,
+      hasVoted,
+      clock: this.masterClock,
+      clockState: this.masterClockState,
+      clockConfig: this.masterClockConfig
     })
 
     // this.translateY = dragInteraction({
