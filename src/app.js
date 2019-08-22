@@ -20,7 +20,10 @@ for (let i = 1; i < 20; i++) {
 
 export default () => (
   <View style={styles.container}>
-    <Swiper items={items} callback={console.log} />
+    <Swiper
+      items={items}
+      callback={([x, item]) => console.log(x > 0 ? 'liked' : 'disliked', item)}
+    />
   </View>
 )
 

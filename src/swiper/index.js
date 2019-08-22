@@ -14,7 +14,7 @@ import {
   getIsDislikingValue
 } from './animations'
 
-const { View, event, Value, interpolate, multiply, Clock } = Animated
+const { View, event, Value, interpolate, multiply } = Animated
 
 class App extends React.Component {
   gestureState = new Value(State.UNDETERMINED)
@@ -65,7 +65,7 @@ class App extends React.Component {
       gestureValue: dragX,
       gestureState,
       reaction: data => {
-        callback(data)
+        callback([data, this.state.items[0]])
       },
       reset: this.reset,
       transXValue: this.transXValue
