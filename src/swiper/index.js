@@ -11,11 +11,12 @@ import { colors } from '../themes'
 import { dragInteractionX, noAction } from './animations'
 import { distanceToSkip, distanceToVote, YSpeedMultiplier } from './constants'
 
+import Overlay from './overlay'
+
 const {
   View,
   event,
   Value,
-  interpolate,
   not,
   greaterThan,
   multiply,
@@ -25,31 +26,6 @@ const {
   abs,
   lessThan
 } = Animated
-
-const Overlay = ({ opacity, text, style }) => (
-  <View
-    style={[
-      styles.overlayContainer,
-      {
-        opacity
-      }
-    ]}
-  >
-    <View
-      style={[
-        styles.opaqueBackground,
-        style,
-        {
-          opacity: interpolate(opacity, {
-            inputRange: [0, 1],
-            outputRange: [0, 0.7]
-          })
-        }
-      ]}
-    />
-    <Text style={styles.textStyle}>{text}</Text>
-  </View>
-)
 
 class App extends React.Component {
   gestureState = new Value(State.UNDETERMINED)
@@ -234,12 +210,6 @@ class App extends React.Component {
 }
 
 const styles = StyleSheet.create({
-  textStyle: {
-    fontFamily: 'Avenir',
-    fontSize: 40,
-    color: colors.white,
-    fontWeight: '500'
-  },
   likeInfo: {
     top: 0,
     left: 0,
@@ -255,22 +225,6 @@ const styles = StyleSheet.create({
   },
   skippingInfo: {
     backgroundColor: colors.blue
-  },
-  overlayContainer: {
-    alignItems: 'center',
-    justifyContent: 'center',
-    top: 0,
-    left: 0,
-    width: '100%',
-    height: '100%',
-    position: 'absolute'
-  },
-  opaqueBackground: {
-    top: 0,
-    left: 0,
-    width: '100%',
-    height: '100%',
-    position: 'absolute'
   },
   likingOverlay: {
     backgroundColor: colors.green
