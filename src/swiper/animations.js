@@ -40,6 +40,15 @@ const startCardClock = (clock, state, startValue) =>
     startClock(clock)
   ])
 
+export const willSkip = (dragX, dragY) =>
+  and(
+    or(
+      lessThan(abs(dragX), distanceToVote),
+      greaterThan(abs(dragY), distanceToSkip)
+    ),
+    lessThan(dragY, 0)
+  )
+
 export const dragInteractionX = ({
   dragX,
   dragY,
@@ -71,13 +80,7 @@ export const dragInteractionX = ({
         cond(
           and(eq(gestureState, State.END), eq(clockRunning(clock), false)),
           cond(
-            and(
-              or(
-                lessThan(abs(dragX), distanceToVote),
-                greaterThan(abs(dragY), distanceToSkip)
-              ),
-              lessThan(dragY, 0)
-            ),
+            willSkip(dragX, dragY),
             [
               debug('here', dragY),
               set(clockConfig.toValue, 0),

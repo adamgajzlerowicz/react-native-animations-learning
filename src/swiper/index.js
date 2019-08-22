@@ -8,8 +8,8 @@ import { PanGestureHandler, State } from 'react-native-gesture-handler'
 import Animated from 'react-native-reanimated'
 
 import { colors } from '../themes'
-import { dragInteractionX } from './animations'
-import { distanceToVote, YSpeedMultiplier } from './constants'
+import { dragInteractionX, willSkip } from './animations'
+import { distanceToSkip, distanceToVote, YSpeedMultiplier } from './constants'
 
 const {
   View,
@@ -20,7 +20,7 @@ const {
   cond,
   eq,
   and,
-  greaterThan,
+  not,
   lessThan
 } = Animated
 
@@ -85,13 +85,17 @@ class App extends React.Component {
     )
 
     this.isLikingOpacity = cond(
-      and(eq(gestureState, State.ACTIVE), greaterThan(dragX, distanceToVote)),
+      and(eq(gestureState, State.ACTIVE), not(willSkip(dragX, dragY))),
       [new Value(1)],
       [new Value(0)]
     )
 
     this.isDislikingOpacity = cond(
-      and(eq(gestureState, State.ACTIVE), lessThan(dragX, -distanceToVote)),
+      and(
+        not(willSkip(dragX, dragY)),
+        eq(gestureState, State.ACTIVE),
+        lessThan(dragX, -distanceToVote)
+      ),
       [new Value(1)],
       [new Value(0)]
     )
