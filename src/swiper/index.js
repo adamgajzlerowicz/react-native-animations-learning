@@ -26,6 +26,31 @@ const {
   lessThan
 } = Animated
 
+const Overlay = ({ opacity, text, style }) => (
+  <View
+    style={[
+      styles.overlayContainer,
+      {
+        opacity
+      }
+    ]}
+  >
+    <View
+      style={[
+        styles.opaqueBackground,
+        style,
+        {
+          opacity: interpolate(opacity, {
+            inputRange: [0, 1],
+            outputRange: [0, 0.7]
+          })
+        }
+      ]}
+    />
+    <Text style={styles.textStyle}>{text}</Text>
+  </View>
+)
+
 class App extends React.Component {
   gestureState = new Value(State.UNDETERMINED)
 
@@ -186,75 +211,21 @@ class App extends React.Component {
                 style={styles.background}
               />
             </View>
-
-            <View
-              style={[
-                styles.overlayContainer,
-                {
-                  opacity: this.isSkippingOpacity
-                }
-              ]}
-            >
-              <View
-                style={[
-                  styles.opaqueBackground,
-                  styles.skippingInfo,
-                  {
-                    opacity: interpolate(this.isSkippingOpacity, {
-                      inputRange: [0, 1],
-                      outputRange: [0, 0.7]
-                    })
-                  }
-                ]}
-              />
-              <Text style={styles.textStyle}>Skip it</Text>
-            </View>
-
-            <View
-              style={[
-                styles.overlayContainer,
-                {
-                  opacity: this.isLikingOpacity
-                }
-              ]}
-            >
-              <View
-                style={[
-                  styles.opaqueBackground,
-                  styles.likingOverlay,
-                  {
-                    opacity: interpolate(this.isLikingOpacity, {
-                      inputRange: [0, 1],
-                      outputRange: [0, 0.7]
-                    })
-                  }
-                ]}
-              />
-              <Text style={styles.textStyle}>Keep it</Text>
-            </View>
-
-            <View
-              style={[
-                styles.overlayContainer,
-                {
-                  opacity: this.isDislikingOpacity
-                }
-              ]}
-            >
-              <View
-                style={[
-                  styles.opaqueBackground,
-                  styles.dislikingOverlay,
-                  {
-                    opacity: interpolate(this.isDislikingOpacity, {
-                      inputRange: [0, 1],
-                      outputRange: [0, 0.7]
-                    })
-                  }
-                ]}
-              />
-              <Text style={styles.textStyle}>Return it</Text>
-            </View>
+            <Overlay
+              style={styles.skippingInfo}
+              opacity={this.isSkippingOpacity}
+              text="Skip it"
+            />
+            <Overlay
+              style={styles.dislikingInfo}
+              opacity={this.isDislikingOpacity}
+              text="Leave it"
+            />
+            <Overlay
+              style={styles.likingInfo}
+              opacity={this.isLikingOpacity}
+              text="Take it"
+            />
           </View>
         </PanGestureHandler>
       </View>
