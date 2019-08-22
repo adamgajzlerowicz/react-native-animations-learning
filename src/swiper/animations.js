@@ -40,7 +40,7 @@ export const dragInteractionX = ({
   gestureValue,
   gestureState,
   reaction,
-  reset,
+  nextSlide,
   transXValue
 }) => {
   const clock = new Clock()
@@ -95,8 +95,13 @@ export const dragInteractionX = ({
       timing(clock, clockState, clockConfig),
       set(transXValue, clockState.position),
       set(gestureState, State.UNDETERMINED),
-
-      cond(clockState.finished, [stopClock(clock), call([], reset)])
+      cond(clockState.finished, [
+        stopClock(clock),
+        cond(
+          greaterThan(clockState.position, throwOutDistance),
+          call([], nextSlide)
+        )
+      ])
     ]),
     transXValue
   ])

@@ -45,7 +45,7 @@ class App extends React.Component {
     }
   ])
 
-  reset = () => {
+  nextSlide = () => {
     // eslint-disable-next-line no-unused-vars
     const [_oldTopItem, ...items] = this.state.items
 
@@ -73,7 +73,7 @@ class App extends React.Component {
       reaction: data => {
         callback([data, this.state.items[0]])
       },
-      reset: this.reset,
+      nextSlide: this.nextSlide,
       transXValue: this.transXValue
     })
 
