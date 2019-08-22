@@ -79,7 +79,6 @@ export const dragInteractionX = ({
           cond(
             noAction(dragX, dragY),
             [
-              debug('here', dragY),
               set(clockConfig.toValue, 0),
               set(clockConfig.duration, returnDuration),
               startCardClock(clock, clockState, dragX)
