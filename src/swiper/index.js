@@ -17,7 +17,7 @@ import {
 const { View, event, Value, interpolate, multiply, Clock } = Animated
 
 class App extends React.Component {
-  gestureState = new Value(-1)
+  gestureState = new Value(State.UNDETERMINED)
 
   dragX = new Value(0)
   dragY = new Value(0)

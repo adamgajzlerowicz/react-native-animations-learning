@@ -23,7 +23,6 @@ const {
   greaterThan,
   lessThan,
   block,
-  multiply,
   timing
 } = Animated
 
@@ -116,7 +115,7 @@ export const dragInteractionX = ({
     ),
     cond(clockRunning(clock), [
       timing(clock, clockState, clockConfig),
-      set(transXValue, clockConfig.toValue),
+      set(transXValue, clockState.position),
       set(gestureState, State.UNDETERMINED),
 
       cond(clockState.finished, [
