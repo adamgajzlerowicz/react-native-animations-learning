@@ -4,7 +4,8 @@ import {
   distanceToVote,
   throwOutDuration,
   throwOutDistance,
-  returnDuration
+  returnDuration,
+  distanceToSkip
 } from './constants'
 
 const {
@@ -17,12 +18,15 @@ const {
   clockRunning,
   stopClock,
   startClock,
+  greaterThan,
   call,
   greaterOrEq,
   abs,
   and,
   lessThan,
   block,
+  or,
+  not,
   timing
 } = Animated
 
@@ -37,7 +41,8 @@ const startCardClock = (clock, state, startValue) =>
   ])
 
 export const dragInteractionX = ({
-  gestureValue,
+  dragX,
+  dragY,
   gestureState,
   reaction,
   nextSlide,
@@ -61,30 +66,33 @@ export const dragInteractionX = ({
   return block([
     cond(
       eq(gestureState, State.ACTIVE),
-      [set(transXValue, gestureValue)],
+      [set(transXValue, dragX)],
       [
         cond(
           and(eq(gestureState, State.END), eq(clockRunning(clock), false)),
           cond(
-            lessThan(abs(gestureValue), distanceToVote),
+            and(
+              or(
+                lessThan(abs(dragX), distanceToVote),
+                greaterThan(abs(dragY), distanceToSkip)
+              ),
+              lessThan(dragY, 0)
+            ),
             [
+              debug('here', dragY),
               set(clockConfig.toValue, 0),
               set(clockConfig.duration, returnDuration),
-              startCardClock(clock, clockState, gestureValue)
+              startCardClock(clock, clockState, dragX)
             ],
             [
               set(clockConfig.duration, throwOutDuration),
               [
                 set(
                   clockConfig.toValue,
-                  cond(
-                    lessThan(gestureValue, 0),
-                    -throwOutDistance,
-                    throwOutDistance
-                  )
+                  cond(lessThan(dragX, 0), -throwOutDistance, throwOutDistance)
                 ),
                 call([transXValue], reaction),
-                startCardClock(clock, clockState, gestureValue)
+                startCardClock(clock, clockState, dragX)
               ]
             ]
           )

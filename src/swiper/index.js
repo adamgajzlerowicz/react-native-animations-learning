@@ -68,7 +68,8 @@ class App extends React.Component {
     this.state.items = items
 
     this.translateX = dragInteractionX({
-      gestureValue: dragX,
+      dragX,
+      dragY,
       gestureState,
       reaction: data => {
         callback([data, this.state.items[0]])
