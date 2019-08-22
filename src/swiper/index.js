@@ -16,11 +16,13 @@ const {
   event,
   Value,
   interpolate,
+  not,
+  greaterThan,
   multiply,
   cond,
   eq,
   and,
-  not,
+  abs,
   lessThan
 } = Animated
 
@@ -85,12 +87,23 @@ class App extends React.Component {
     )
 
     this.isLikingOpacity = cond(
-      and(eq(gestureState, State.ACTIVE), not(noAction(dragX, dragY))),
+      and(
+        eq(gestureState, State.ACTIVE),
+        not(noAction(dragX, dragY)),
+        greaterThan(dragX, distanceToVote)
+      ),
       [new Value(1)],
       [new Value(0)]
     )
 
-    this.isSkippingOpacity = new Value(1)
+    this.isSkippingOpacity = cond(
+      and(
+        eq(gestureState, State.ACTIVE),
+        and(greaterThan(abs(dragY), distanceToSkip), lessThan(dragY, 0))
+      ),
+      [new Value(1)],
+      [new Value(0)]
+    )
 
     this.isDislikingOpacity = cond(
       and(
