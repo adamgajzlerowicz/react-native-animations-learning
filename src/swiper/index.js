@@ -21,23 +21,9 @@ class App extends React.Component {
 
   dragX = new Value(0)
   dragY = new Value(0)
+  transXValue = new Value(0)
   isLikingOpacity = new Value(0)
   isDislikingOpacity = new Value(0)
-  hasVoted = new Value(false)
-  masterClock = new Clock()
-
-  masterClockState = {
-    finished: new Value(0),
-    position: new Value(0),
-    time: new Value(0),
-    frameTime: new Value(0)
-  }
-
-  masterClockConfig = {
-    duration: new Value(100),
-    toValue: new Value(0),
-    easing: Easing.inOut(Easing.ease)
-  }
 
   state = {
     items: []
@@ -53,23 +39,23 @@ class App extends React.Component {
     }
   ])
 
-  setNextSlide = () => {
+  reset = () => {
     // eslint-disable-next-line no-unused-vars
-    const [_oldTopItem, ...items] = this.state.items
-
-    this.setState(
-      {
-        items
-      },
-      () => {
-        this.masterClockState.position.setValue(0)
-      }
-    )
+    // const [_oldTopItem, ...items] = this.state.items
+    //
+    // this.setState(
+    //   {
+    //     items
+    //   },
+    //   () => {
+    //     this.transXValue.setValue(0)
+    //   }
+    // )
   }
 
   constructor(props) {
     super(props)
-    const { dragY, gestureState, dragX, hasVoted } = this
+    const { dragY, gestureState, dragX } = this
 
     const { callback, items } = this.props
 
@@ -81,35 +67,21 @@ class App extends React.Component {
       reaction: data => {
         callback(data)
       },
-      setNextSlide: this.setNextSlide,
-      hasVoted,
-      clock: this.masterClock,
-      clockState: this.masterClockState,
-      clockConfig: this.masterClockConfig
+      reset: this.reset,
+      transXValue: this.transXValue
     })
 
-    // this.translateY = dragInteraction({
-    //   gestureValue: dragY,
-    //   gestureState,
-    //   callback: data => {
-    //     // this.onVote()
-    //     // callback(data)
-    //   },
-    //   hasVoted
-    // })
     this.translateY = new Value(0)
 
-    this.isLikingOpacity = getIsLikingValue({
-      gestureState,
-      dragValue: dragX,
-      hasVoted
-    })
+    // this.isLikingOpacity = getIsLikingValue({
+    //   gestureState,
+    //   dragValue: dragX
+    // })
 
-    this.isDislikingOpacity = getIsDislikingValue({
-      gestureState,
-      dragValue: dragX,
-      hasVoted
-    })
+    //   this.isDislikingOpacity = getIsDislikingValue({
+    //     gestureState,
+    //     dragValue: dragX
+    //   })
   }
 
   render() {

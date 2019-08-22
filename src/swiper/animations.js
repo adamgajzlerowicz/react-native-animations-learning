@@ -23,12 +23,12 @@ const {
   greaterThan,
   lessThan,
   block,
+  multiply,
   timing
 } = Animated
 
-const makeLikingValue = ({ gestureState, condition, hasVoted }) =>
+const makeLikingValue = ({ gestureState, condition }) =>
   cond(
-    eq(hasVoted, true),
     new Value(0),
     cond(
       and(eq(gestureState, State.ACTIVE), condition),
@@ -37,18 +37,16 @@ const makeLikingValue = ({ gestureState, condition, hasVoted }) =>
     )
   )
 
-export const getIsLikingValue = ({ gestureState, dragValue, hasVoted }) =>
+export const getIsLikingValue = ({ gestureState, dragValue }) =>
   makeLikingValue({
     gestureState,
-    condition: greaterThan(dragValue, distanceToVote),
-    hasVoted
+    condition: greaterThan(dragValue, distanceToVote)
   })
 
-export const getIsDislikingValue = ({ gestureState, dragValue, hasVoted }) =>
+export const getIsDislikingValue = ({ gestureState, dragValue }) =>
   makeLikingValue({
     gestureState,
-    condition: lessThan(dragValue, -distanceToVote),
-    hasVoted
+    condition: lessThan(dragValue, -distanceToVote)
   })
 
 const startCardClock = (clock, state, startValue) =>
@@ -65,76 +63,70 @@ export const dragInteractionX = ({
   gestureValue,
   gestureState,
   reaction,
-  setNextSlide,
-  hasVoted,
-  clockConfig,
-  clockState,
-  clock
+  reset,
+  transXValue
 }) => {
-  const isDragging = new Value(false)
+  const clock = new Clock()
+
+  const clockState = {
+    finished: new Value(0),
+    position: new Value(0),
+    time: new Value(0),
+    frameTime: new Value(0)
+  }
+
+  const clockConfig = {
+    duration: new Value(100),
+    toValue: new Value(0),
+    easing: Easing.inOut(Easing.ease)
+  }
 
   return block([
     cond(
-      eq(hasVoted, false),
-      cond(
-        eq(gestureState, State.ACTIVE),
-        [set(isDragging, true), set(clockState.position, gestureValue)],
-        [
+      eq(gestureState, State.ACTIVE),
+      [set(transXValue, gestureValue)],
+      [
+        cond(
+          and(eq(gestureState, State.END), eq(clockRunning(clock), false)),
           cond(
-            eq(isDragging, true),
-            cond(
-              lessThan(abs(gestureValue), distanceToVote),
+            lessThan(abs(gestureValue), distanceToVote),
+            [
+              set(clockConfig.toValue, 0),
+              set(clockConfig.duration, returnDuration),
+              startCardClock(clock, clockState, gestureValue)
+            ],
+            [
+              set(clockConfig.duration, throwOutDuration),
               [
-                set(isDragging, false),
-                set(clockConfig.toValue, 0),
-                set(clockConfig.duration, returnDuration),
+                set(
+                  clockConfig.toValue,
+                  cond(
+                    lessThan(gestureValue, 0),
+                    -throwOutDistance,
+                    throwOutDistance
+                  )
+                ),
+                call([transXValue], reaction),
                 startCardClock(clock, clockState, gestureValue)
-              ],
-              [
-                set(clockConfig.duration, throwOutDuration),
-                cond(
-                  eq(hasVoted, false),
-
-                  // start throw out animation and give vote
-                  block([
-                    cond(
-                      lessThan(0, gestureValue),
-                      [
-                        set(clockConfig.toValue, throwOutDistance),
-                        call([new Value('liked')], reaction),
-                        set(hasVoted, true)
-                      ],
-                      [
-                        set(clockConfig.toValue, -throwOutDistance),
-                        call([new Value('disliked')], reaction)
-                      ]
-                    ),
-                    startCardClock(clock, clockState, gestureValue),
-                    set(hasVoted, true)
-                  ])
-                )
               ]
-            )
+            ]
           )
-        ]
-      )
+        )
+      ]
     ),
     cond(clockRunning(clock), [
       timing(clock, clockState, clockConfig),
+      set(transXValue, clockConfig.toValue),
+      set(gestureState, State.UNDETERMINED),
+
       cond(clockState.finished, [
-        // if vote was given cleanup
         stopClock(clock),
-        cond(eq(hasVoted, true), [
-          call([], setNextSlide),
-          set(isDragging, false),
-          set(hasVoted, false),
-          set(clockState.finished, 0),
-          // set(clockState.position, 0),
-          set(clockState.time, 0),
-          set(clockState.frameTime, 0)
-        ])
+        call([], reset),
+        set(clockState.finished, 0),
+        set(clockState.time, 0),
+        set(clockState.frameTime, 0)
       ])
     ]),
-    clockState.position
+    transXValue
   ])
 }
