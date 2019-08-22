@@ -18,6 +18,7 @@ const {
   stopClock,
   startClock,
   call,
+  greaterOrEq,
   abs,
   and,
   lessThan,
@@ -96,7 +97,10 @@ export const dragInteractionX = ({
       set(gestureState, State.UNDETERMINED),
       cond(clockState.finished, [
         stopClock(clock),
-        cond(eq(clockState.position, throwOutDistance), call([], nextSlide))
+        cond(
+          greaterOrEq(abs(clockState.position), throwOutDistance),
+          call([], nextSlide)
+        )
       ])
     ]),
     transXValue

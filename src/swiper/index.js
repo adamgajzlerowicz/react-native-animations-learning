@@ -106,6 +106,15 @@ class App extends React.Component {
           onHandlerStateChange={this.onGestureEvent}
         >
           <View style={styles.container}>
+            <View style={[styles.box]}>
+              <Image
+                source={{
+                  uri: backgroundItem.url
+                }}
+                style={styles.background}
+              />
+            </View>
+
             <View
               style={[
                 styles.likeInfo,
@@ -115,15 +124,6 @@ class App extends React.Component {
                 }
               ]}
             />
-
-            <View style={[styles.box]}>
-              <Image
-                source={{
-                  uri: backgroundItem.url
-                }}
-                style={styles.background}
-              />
-            </View>
 
             <View
               style={[
