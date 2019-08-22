@@ -9,7 +9,7 @@ import Animated from 'react-native-reanimated'
 
 import { colors } from '../themes'
 import { dragInteractionX } from './animations'
-import { distanceToVote } from './constants'
+import { distanceToVote, YSpeedMultiplier } from './constants'
 
 const {
   View,
@@ -61,7 +61,7 @@ class App extends React.Component {
 
   constructor(props) {
     super(props)
-    const { dragY, gestureState, dragX } = this
+    const { gestureState, dragX, dragY } = this
 
     const { callback, items } = this.props
 
@@ -77,7 +77,11 @@ class App extends React.Component {
       transXValue: this.transXValue
     })
 
-    this.translateY = new Value(0)
+    this.translateY = cond(
+      eq(gestureState, State.ACTIVE),
+      multiply(dragY, YSpeedMultiplier),
+      new Value(0)
+    )
 
     this.isLikingOpacity = cond(
       and(eq(gestureState, State.ACTIVE), greaterThan(dragX, distanceToVote)),
