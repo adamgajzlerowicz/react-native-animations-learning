@@ -26,28 +26,6 @@ const {
   timing
 } = Animated
 
-const makeLikingValue = ({ gestureState, condition }) =>
-  cond(
-    new Value(0),
-    cond(
-      and(eq(gestureState, State.ACTIVE), condition),
-      [new Value(1)],
-      [new Value(0)]
-    )
-  )
-
-export const getIsLikingValue = ({ gestureState, dragValue }) =>
-  makeLikingValue({
-    gestureState,
-    condition: greaterThan(dragValue, distanceToVote)
-  })
-
-export const getIsDislikingValue = ({ gestureState, dragValue }) =>
-  makeLikingValue({
-    gestureState,
-    condition: lessThan(dragValue, -distanceToVote)
-  })
-
 const startCardClock = (clock, state, startValue) =>
   block([
     set(state.finished, 0),

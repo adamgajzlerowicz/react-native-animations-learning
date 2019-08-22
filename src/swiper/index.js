@@ -5,16 +5,24 @@
 import React from 'react'
 import { StyleSheet, Text, Image } from 'react-native'
 import { PanGestureHandler, State } from 'react-native-gesture-handler'
-import Animated, { Easing } from 'react-native-reanimated'
+import Animated from 'react-native-reanimated'
 
 import { colors } from '../themes'
-import {
-  dragInteractionX,
-  getIsLikingValue,
-  getIsDislikingValue
-} from './animations'
+import { dragInteractionX } from './animations'
+import { distanceToVote } from './constants'
 
-const { View, event, Value, interpolate, multiply } = Animated
+const {
+  View,
+  event,
+  Value,
+  interpolate,
+  multiply,
+  cond,
+  eq,
+  and,
+  greaterThan,
+  lessThan
+} = Animated
 
 class App extends React.Component {
   gestureState = new Value(State.UNDETERMINED)
@@ -22,8 +30,6 @@ class App extends React.Component {
   dragX = new Value(0)
   dragY = new Value(0)
   transXValue = new Value(0)
-  isLikingOpacity = new Value(0)
-  isDislikingOpacity = new Value(0)
 
   state = {
     items: []
@@ -73,15 +79,17 @@ class App extends React.Component {
 
     this.translateY = new Value(0)
 
-    // this.isLikingOpacity = getIsLikingValue({
-    //   gestureState,
-    //   dragValue: dragX
-    // })
+    this.isLikingOpacity = cond(
+      and(eq(gestureState, State.ACTIVE), greaterThan(dragX, distanceToVote)),
+      [new Value(1)],
+      [new Value(0)]
+    )
 
-    //   this.isDislikingOpacity = getIsDislikingValue({
-    //     gestureState,
-    //     dragValue: dragX
-    //   })
+    this.isDislikingOpacity = cond(
+      and(eq(gestureState, State.ACTIVE), lessThan(dragX, -distanceToVote)),
+      [new Value(1)],
+      [new Value(0)]
+    )
   }
 
   render() {
