@@ -118,13 +118,7 @@ export const dragInteractionX = ({
       set(transXValue, clockState.position),
       set(gestureState, State.UNDETERMINED),
 
-      cond(clockState.finished, [
-        stopClock(clock),
-        call([], reset),
-        set(clockState.finished, 0),
-        set(clockState.time, 0),
-        set(clockState.frameTime, 0)
-      ])
+      cond(clockState.finished, [stopClock(clock), call([], reset)])
     ]),
     transXValue
   ])
