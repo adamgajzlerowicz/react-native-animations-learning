@@ -90,6 +90,8 @@ class App extends React.Component {
       [new Value(0)]
     )
 
+    this.isSkippingOpacity = new Value(1)
+
     this.isDislikingOpacity = cond(
       and(
         not(noAction(dragX, dragY)),
@@ -142,6 +144,16 @@ class App extends React.Component {
 
             <View
               style={[
+                styles.likeInfo,
+                styles.skippingInfo,
+                {
+                  opacity: this.isSkippingOpacity
+                }
+              ]}
+            />
+
+            <View
+              style={[
                 styles.box,
                 {
                   transform: [
@@ -160,6 +172,29 @@ class App extends React.Component {
                 }}
                 style={styles.background}
               />
+            </View>
+
+            <View
+              style={[
+                styles.overlayContainer,
+                {
+                  opacity: this.isSkippingOpacity
+                }
+              ]}
+            >
+              <View
+                style={[
+                  styles.opaqueBackground,
+                  styles.skippingInfo,
+                  {
+                    opacity: interpolate(this.isSkippingOpacity, {
+                      inputRange: [0, 1],
+                      outputRange: [0, 0.7]
+                    })
+                  }
+                ]}
+              />
+              <Text style={styles.textStyle}>Skip it</Text>
             </View>
 
             <View
@@ -233,6 +268,9 @@ const styles = StyleSheet.create({
   },
   dislikingInfo: {
     backgroundColor: colors.red
+  },
+  skippingInfo: {
+    backgroundColor: colors.blue
   },
   overlayContainer: {
     alignItems: 'center',
