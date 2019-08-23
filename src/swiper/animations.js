@@ -54,95 +54,61 @@ export const dragInteractionY = ({
   dragY,
   gestureState,
   reaction,
-  nextSlide,
-  transXValue
+  transYValue
 }) => {
-  return cond(
-    eq(gestureState, State.ACTIVE),
-    multiply(dragY, YSpeedMultiplier),
-    new Value(0)
-  )
+  const clock = new Clock()
 
-  // const clock = new Clock()
-  //
-  // const clockState = {
-  //   finished: new Value(0),
-  //   position: new Value(0),
-  //   time: new Value(0),
-  //   frameTime: new Value(0)
-  // }
-  //
-  // const clockConfig = {
-  //   duration: new Value(skipDuration),
-  //   toValue: new Value(skipDistance),
-  //   easing: Easing.inOut(Easing.ease)
-  // }
-  //
-  // return block([
-  //   cond(
-  //     eq(gestureState, State.ACTIVE),
-  //     [set(transXValue, dragX)],
-  //     [
-  //       cond(
-  //         and(eq(gestureState, State.END), eq(clockRunning(clock), false)),
-  //         cond(
-  //           // should return
-  //           and(
-  //             lessThan(abs(dragX), distanceToVote),
-  //             lessThan(abs(dragY), distanceToSkip)
-  //           ),
-  //           [
-  //             set(clockConfig.toValue, 0),
-  //             set(clockConfig.duration, returnDuration),
-  //             startCardClock(clock, clockState, dragX)
-  //           ],
-  //           [
-  //             cond(
-  //               and(
-  //                 greaterOrEq(abs(dragY), distanceToSkip),
-  //                 lessThan(dragY, 0)
-  //               ),
-  //               [
-  //                 // debug('a', dragX),
-  //                 set(clockConfig.duration, throwOutDuration),
-  //                 set(clockConfig.toValue, skipDistance),
-  //                 call([transXValue, dragY], reaction)
-  //               ],
-  //               [
-  //                 set(clockConfig.duration, throwOutDuration), // refactor
-  //                 [
-  //                   set(
-  //                     clockConfig.toValue,
-  //                     cond(
-  //                       lessThan(dragX, 0),
-  //                       -throwOutDistance,
-  //                       throwOutDistance
-  //                     )
-  //                   ),
-  //                   call([transXValue, dragY], reaction),
-  //                   startCardClock(clock, clockState, dragX)
-  //                 ]
-  //               ]
-  //             )
-  //           ]
-  //         )
-  //       )
-  //     ]
-  //   ),
-  //   cond(clockRunning(clock), [
-  //     timing(clock, clockState, clockConfig),
-  //     set(transXValue, clockState.position),
-  //     set(gestureState, State.UNDETERMINED),
-  //     cond(clockState.finished, [
-  //       stopClock(clock),
-  //       cond(
-  //         greaterOrEq(abs(clockState.position), throwOutDistance),
-  //         call([], nextSlide)
-  //       )
-  //     ])
-  //   ]),
-  //   transXValue
-  // ])
+  const clockState = {
+    finished: new Value(0),
+    position: new Value(0),
+    time: new Value(0),
+    frameTime: new Value(0)
+  }
+
+  const clockConfig = {
+    duration: new Value(skipDuration),
+    toValue: new Value(skipDistance),
+    easing: Easing.inOut(Easing.ease)
+  }
+
+  return block([
+    [debug('gestureState', gestureState)],
+
+    cond(
+      eq(gestureState, State.ACTIVE),
+      set(transYValue, dragY),
+      block([
+        cond(
+          and(eq(gestureState, State.BEGAN), eq(clockRunning(clock), false)),
+          block([
+            // debug('dupa', dragY),
+            cond(
+              // should return to original position
+              and(
+                lessThan(abs(dragX), distanceToVote),
+                lessThan(abs(dragY), distanceToSkip)
+              ),
+              [
+                set(clockConfig.toValue, 0),
+                debug('hello', dragY),
+                startCardClock(clock, clockState, dragY)
+              ]
+              // [debug('meh', dragY)]
+            )
+          ])
+          // [debug('clock', gestureState)]
+        )
+      ])
+    ),
+    cond(clockRunning(clock), [
+      timing(clock, clockState, clockConfig),
+      set(transYValue, clockState.position),
+      // debug('Y end', gestureState),
+      // set(gestureState, State.UNDETERMINED),
+      cond(clockState.finished, debug('stop', stopClock(clock)))
+    ]),
+    transYValue
+  ])
 }
 
 export const dragInteractionX = ({
@@ -185,7 +151,7 @@ export const dragInteractionX = ({
             ],
             [
               [
-                set(clockConfig.duration, throwOutDuration), // refactor
+                set(clockConfig.duration, throwOutDuration),
                 [
                   set(
                     clockConfig.toValue,

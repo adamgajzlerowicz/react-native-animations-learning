@@ -9,12 +9,7 @@ import Animated from 'react-native-reanimated'
 
 import { colors } from '../themes'
 import { dragInteractionX, dragInteractionY, noAction } from './animations'
-import {
-  distanceToSkip,
-  distanceToVote,
-  YSpeedMultiplier,
-  reactions
-} from './constants'
+import { distanceToSkip, distanceToVote, reactions } from './constants'
 
 import Overlay from './overlay'
 
@@ -33,11 +28,12 @@ const {
 } = Animated
 
 class App extends React.Component {
-  gestureState = new Value(State.UNDETERMINED)
+  gestureState = new Value(-1)
 
   dragX = new Value(0)
   dragY = new Value(0)
   transXValue = new Value(0)
+  transYValue = new Value(0)
 
   state = {
     items: []
@@ -63,6 +59,7 @@ class App extends React.Component {
       },
       () => {
         this.transXValue.setValue(0)
+        this.transYValue.setValue(0)
       }
     )
   }
@@ -118,7 +115,7 @@ class App extends React.Component {
         }
       },
       nextSlide: this.nextSlide,
-      transXValue: this.transXValue
+      transYValue: this.transYValue
     })
 
     this.isLikingOpacity = cond(
