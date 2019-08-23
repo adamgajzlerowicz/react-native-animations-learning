@@ -15,3 +15,5 @@ export const throwOutDuration = 300
 export const returnDuration = 100
 export const YSpeedMultiplier = 2
 export const distanceToSkip = deviceHeight / 3
+export const skipDistance = deviceHeight * 2
+export const skipDuration = 400

@@ -8,7 +8,7 @@ import { PanGestureHandler, State } from 'react-native-gesture-handler'
 import Animated from 'react-native-reanimated'
 
 import { colors } from '../themes'
-import { dragInteractionX, noAction } from './animations'
+import { dragInteractionX, dragInteractionY, noAction } from './animations'
 import {
   distanceToSkip,
   distanceToVote,
@@ -98,11 +98,28 @@ class App extends React.Component {
       transXValue: this.transXValue
     })
 
-    this.translateY = cond(
-      eq(gestureState, State.ACTIVE),
-      multiply(dragY, YSpeedMultiplier),
-      new Value(0)
-    )
+    this.translateY = dragInteractionY({
+      dragX,
+      dragY,
+      gestureState,
+      reaction: ([x, y]) => {
+        const item = this.state.items[0]
+
+        if (Math.abs(y) > distanceToSkip) {
+          callback([reactions.skip])
+        }
+
+        if (x > 0) {
+          callback([reactions.like, item])
+        }
+
+        if (x < 0) {
+          callback([reactions.dislike, item])
+        }
+      },
+      nextSlide: this.nextSlide,
+      transXValue: this.transXValue
+    })
 
     this.isLikingOpacity = cond(
       and(
