@@ -3,7 +3,7 @@
  */
 
 import React from 'react'
-import { StyleSheet, Text, Image } from 'react-native'
+import { StyleSheet, Image } from 'react-native'
 import { PanGestureHandler, State } from 'react-native-gesture-handler'
 import Animated from 'react-native-reanimated'
 
