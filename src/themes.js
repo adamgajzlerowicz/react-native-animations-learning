@@ -7,5 +7,5 @@ export const colors = {
   black: '#000',
   green: '#66cc94',
   red: '#e44b23',
-  blue: 'blue'
+  blue: 'rgb(0, 122, 255)'
 }
