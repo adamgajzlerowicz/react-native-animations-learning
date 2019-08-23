@@ -26,7 +26,6 @@ const {
   lessThan,
   block,
   or,
-  not,
   timing
 } = Animated
 
@@ -77,22 +76,39 @@ export const dragInteractionX = ({
         cond(
           and(eq(gestureState, State.END), eq(clockRunning(clock), false)),
           cond(
-            noAction(dragX, dragY),
+            // should return
+            and(
+              lessThan(abs(dragX), distanceToVote),
+              lessThan(abs(dragY), distanceToSkip)
+            ),
             [
               set(clockConfig.toValue, 0),
               set(clockConfig.duration, returnDuration),
               startCardClock(clock, clockState, dragX)
             ],
             [
-              set(clockConfig.duration, throwOutDuration),
-              [
-                set(
-                  clockConfig.toValue,
-                  cond(lessThan(dragX, 0), -throwOutDistance, throwOutDistance)
+              cond(
+                and(
+                  greaterOrEq(abs(dragY), distanceToSkip),
+                  lessThan(dragY, 0)
                 ),
-                call([transXValue], reaction),
-                startCardClock(clock, clockState, dragX)
-              ]
+                [debug('here', dragY)],
+                [
+                  set(clockConfig.duration, throwOutDuration), // refactor
+                  [
+                    set(
+                      clockConfig.toValue,
+                      cond(
+                        lessThan(dragX, 0),
+                        -throwOutDistance,
+                        throwOutDistance
+                      )
+                    ),
+                    call([transXValue, dragY], reaction),
+                    startCardClock(clock, clockState, dragX)
+                  ]
+                ]
+              )
             ]
           )
         )

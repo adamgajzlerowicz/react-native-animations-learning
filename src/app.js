@@ -22,7 +22,9 @@ export default () => (
   <View style={styles.container}>
     <Swiper
       items={items}
-      callback={([x, item]) => console.log(x > 0 ? 'liked' : 'disliked', item)}
+      callback={([reaction, item]) => {
+        console.log(reaction, item)
+      }}
     />
   </View>
 )
