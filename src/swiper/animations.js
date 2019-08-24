@@ -7,7 +7,6 @@ import {
   returnDuration,
   distanceToSkip,
   skipDistance,
-  skipDuration,
   YSpeedMultiplier,
   XSpeedMultiplier
 } from './constants'
@@ -127,7 +126,7 @@ export const dragInteractionX = ({
                 ),
                 // skip clock start
                 [
-                  set(yClockConfig.duration, skipDuration),
+                  set(yClockConfig.duration, returnDuration),
                   startCardClock(
                     yClock,
                     yClockState,
