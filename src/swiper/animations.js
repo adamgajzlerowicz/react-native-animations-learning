@@ -83,7 +83,7 @@ export const dragInteraction = ({
   }
 
   const yClockConfig = {
-    duration: new Value(returnDuration),
+    duration: new Value(1000),
     toValue: new Value(-skipDistance),
     easing: Easing.inOut(Easing.ease)
   }
@@ -110,8 +110,9 @@ export const dragInteraction = ({
             ),
             [
               set(clockConfig.toValue, 0),
-              set(clockConfig.duration, returnDuration),
               set(yClockConfig.toValue, 0),
+              set(clockConfig.duration, returnDuration),
+              set(yClockConfig.duration, returnDuration),
               block([
                 startCardClock(xClock, clockState, dragX),
                 startCardClock(yClock, yClockState, dragY)
@@ -126,14 +127,11 @@ export const dragInteraction = ({
                 ),
                 // skip clock start
                 [
-                  set(yClockConfig.duration, returnDuration),
+                  set(yClockConfig.duration, throwOutDuration),
                   startCardClock(
                     yClock,
                     yClockState,
-                    interpolate(dragY, {
-                      inputRange: [-9999, 0],
-                      outputRange: [-YSpeedMultiplier * 9999, 0]
-                    })
+                    multiply(dragY, new Value(YSpeedMultiplier))
                   )
                 ],
                 // vote clock start

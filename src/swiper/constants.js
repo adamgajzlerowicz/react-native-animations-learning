@@ -11,9 +11,9 @@ export const reactions = {
 
 export const distanceToVote = deviceWidth / 6
 export const throwOutDistance = deviceWidth
-export const throwOutDuration = 300
+export const throwOutDuration = 400
 export const returnDuration = 100
 export const YSpeedMultiplier = 2
 export const XSpeedMultiplier = 1.3
-export const distanceToSkip = deviceHeight / 3
+export const distanceToSkip = deviceHeight / 6
 export const skipDistance = deviceHeight * 2
