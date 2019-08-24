@@ -147,12 +147,13 @@ export const dragInteractionX = ({
             eq(clockRunning(yClock), false)
           ),
           cond(
-            // should return to original position
+            // should return to original position ?
             and(
               lessThan(abs(dragX), distanceToVote),
-              and(lessThan(abs(dragY), distanceToSkip), lessThan(dragY, 0))
+              or(lessThan(abs(dragY), distanceToSkip), greaterThan(dragY, 0))
             ),
             [
+              debug('returning to original position', dragY),
               set(clockConfig.toValue, 0),
               set(clockConfig.duration, returnDuration),
               set(yClockConfig.toValue, 0),
@@ -162,11 +163,13 @@ export const dragInteractionX = ({
               ])
             ],
             [
-              debug('here', dragX),
+              debug('here', transXValue),
               call([transXValue, dragY], reaction),
               cond(
-                greaterThan(abs(dragY), distanceToSkip),
-                lessThan(dragY, 0),
+                and(
+                  greaterThan(abs(dragY), distanceToSkip),
+                  lessThan(dragY, 0)
+                ),
                 // skip clock start
                 [
                   set(clockConfig.duration, skipDuration),
