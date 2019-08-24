@@ -158,7 +158,13 @@ export const dragInteraction = ({
     cond(clockRunning(yClock), [
       timing(yClock, yClockState, yClockConfig),
       set(transYValue, yClockState.position),
-      cond(yClockState.finished, stopClock(yClock))
+      cond(yClockState.finished, [
+        stopClock(yClock),
+        cond(
+          and(greaterThan(abs(dragY), distanceToSkip), lessThan(dragY, 0)),
+          call([], nextSlide)
+        )
+      ])
     ]),
     cond(clockRunning(xClock), [
       timing(xClock, clockState, clockConfig),
@@ -166,11 +172,8 @@ export const dragInteraction = ({
       cond(clockState.finished, [
         stopClock(xClock),
         cond(
-          or(
-            greaterOrEq(abs(clockState.position), throwOutDistance),
-            and(greaterThan(abs(dragY), distanceToSkip), lessThan(dragY, 0))
-          ),
-          [call([], nextSlide), debug('calling it', dragY)]
+          greaterOrEq(abs(clockState.position), throwOutDistance),
+          call([], nextSlide)
         )
       ])
     ]),
