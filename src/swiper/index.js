@@ -10,6 +10,7 @@ import Animated from 'react-native-reanimated'
 import { colors } from '../themes'
 import { dragInteractionX, dragInteractionY, noAction } from './animations'
 import { distanceToSkip, distanceToVote, reactions } from './constants'
+import { reaction } from './helpers'
 
 import Overlay from './overlay'
 
@@ -76,21 +77,7 @@ class App extends React.Component {
       dragX,
       dragY,
       gestureState,
-      reaction: ([x, y]) => {
-        const item = this.state.items[0]
-
-        if (Math.abs(y) > distanceToSkip) {
-          callback([reactions.skip])
-        }
-
-        if (x > 0) {
-          callback([reactions.like, item])
-        }
-
-        if (x < 0) {
-          callback([reactions.dislike, item])
-        }
-      },
+      reaction: reaction({ callback, item: this.state.items[0] }),
       nextSlide: this.nextSlide,
       transXValue: this.transXValue
     })
@@ -99,21 +86,7 @@ class App extends React.Component {
       dragX,
       dragY,
       gestureState,
-      reaction: ([x, y]) => {
-        const item = this.state.items[0]
-
-        if (Math.abs(y) > distanceToSkip) {
-          callback([reactions.skip])
-        }
-
-        if (x > 0) {
-          callback([reactions.like, item])
-        }
-
-        if (x < 0) {
-          callback([reactions.dislike, item])
-        }
-      },
+      reaction: reaction({ callback, item: this.state.items[0] }),
       nextSlide: this.nextSlide,
       transYValue: this.transYValue
     })
