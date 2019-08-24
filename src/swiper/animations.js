@@ -66,53 +66,6 @@ export const noAction = (dragX, dragY) =>
     and(greaterThan(abs(dragY), distanceToSkip), lessThan(dragY, 0))
   )
 
-export const dragInteractionY = ({
-  // dragX,
-  dragY,
-  gestureState,
-  // reaction,
-  transYValue
-}) =>
-  block([
-    cond(
-      eq(gestureState, State.ACTIVE),
-      set(transYValue, multiply(dragY, YSpeedMultiplier)),
-      block([
-        // cond(
-        //   and(
-        //     eq(gestureState, State.END),
-        //     eq(clockRunning(YClock), false),
-        //     eq(clockRunning(XClock), false)
-        //   ),
-        //
-        //   block([
-        //     cond(
-        //       and(
-        //         lessThan(abs(dragX), distanceToVote),
-        //         lessThan(abs(dragY), distanceToSkip)
-        //       ),
-        //       // should return to original position
-        //
-        //       [
-        //         [debug('if', dragY)],
-        //         set(clockConfig.toValue, 0),
-        //         startCardClock(YClock, clockState, dragY)
-        //       ],
-        //       // animate up
-        //
-        //       [debug('else', dragY)]
-        //     )
-        //   ])
-        // )
-      ])
-    ),
-    cond(clockRunning(yClock), [
-      timing(yClock, yClockState, yClockConfig),
-      set(transYValue, yClockState.position),
-      cond(yClockState.finished, stopClock(yClock))
-    ]),
-    transYValue
-  ])
 
 export const dragInteractionX = ({
   dragX,
@@ -120,7 +73,8 @@ export const dragInteractionX = ({
   gestureState,
   reaction,
   nextSlide,
-  transXValue
+  transXValue,
+  transYValue
 }) => {
   const clockState = {
     finished: new Value(0),
@@ -138,7 +92,10 @@ export const dragInteractionX = ({
   return block([
     cond(
       eq(gestureState, State.ACTIVE),
-      [set(transXValue, multiply(dragX, XSpeedMultiplier))],
+      [
+        set(transXValue, multiply(dragX, XSpeedMultiplier)),
+        set(transYValue, multiply(dragY, YSpeedMultiplier))
+      ],
       [
         // debug('is not skipping', new Value(distanceToSkip)),
         cond(
@@ -202,13 +159,21 @@ export const dragInteractionX = ({
         )
       ]
     ),
+    cond(clockRunning(yClock), [
+      timing(yClock, yClockState, yClockConfig),
+      set(transYValue, yClockState.position),
+      cond(yClockState.finished, stopClock(yClock))
+    ]),
     cond(clockRunning(xClock), [
       timing(xClock, clockState, clockConfig),
       set(transXValue, clockState.position),
       cond(clockState.finished, [
         stopClock(xClock),
         cond(
-          greaterOrEq(abs(clockState.position), throwOutDistance),
+          or(
+            greaterOrEq(abs(clockState.position), throwOutDistance),
+            and(greaterThan(abs(dragY), distanceToSkip), lessThan(dragY, 0))
+          ),
           call([], nextSlide)
         )
       ])

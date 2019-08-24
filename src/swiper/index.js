@@ -79,17 +79,11 @@ class App extends React.Component {
       gestureState,
       reaction: reaction({ callback, item: this.state.items[0] }),
       nextSlide: this.nextSlide,
+      transYValue: this.transYValue,
       transXValue: this.transXValue
     })
 
-    this.translateY = dragInteractionY({
-      dragX,
-      dragY,
-      gestureState,
-      reaction: reaction({ callback, item: this.state.items[0] }),
-      nextSlide: this.nextSlide,
-      transYValue: this.transYValue
-    })
+    this.translateY = this.transYValue
 
     this.isLikingOpacity = cond(
       and(

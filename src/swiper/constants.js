@@ -17,4 +17,4 @@ export const YSpeedMultiplier = 2
 export const XSpeedMultiplier = 1.3
 export const distanceToSkip = deviceHeight / 3
 export const skipDistance = deviceHeight * 2
-export const skipDuration = 2200
+export const skipDuration = 200
