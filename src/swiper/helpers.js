@@ -2,14 +2,14 @@ import { distanceToSkip, reactions } from './constants'
 
 export const reaction = ({ callback, item }) => ([x, y]) => {
   if (Math.abs(y) > distanceToSkip) {
-    callback([reactions.skip, item])
+    return callback([reactions.skip, item])
   }
 
   if (x > 0) {
-    callback([reactions.like, item])
+    return callback([reactions.like, item])
   }
 
   if (x < 0) {
-    callback([reactions.dislike, item])
+    return callback([reactions.dislike, item])
   }
 }

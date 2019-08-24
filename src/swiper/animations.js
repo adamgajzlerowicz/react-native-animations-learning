@@ -119,7 +119,8 @@ export const dragInteraction = ({
               ])
             ],
             [
-              call([transXValue, dragY], reaction),
+              debug('here', dragX),
+              call([dragX, dragY], reaction),
               cond(
                 and(
                   greaterThan(abs(dragY), distanceToSkip),
