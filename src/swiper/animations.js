@@ -66,7 +66,6 @@ export const noAction = (dragX, dragY) =>
     and(greaterThan(abs(dragY), distanceToSkip), lessThan(dragY, 0))
   )
 
-
 export const dragInteractionX = ({
   dragX,
   dragY,
@@ -97,7 +96,6 @@ export const dragInteractionX = ({
         set(transYValue, multiply(dragY, YSpeedMultiplier))
       ],
       [
-        // debug('is not skipping', new Value(distanceToSkip)),
         cond(
           and(
             eq(gestureState, State.END),
@@ -111,7 +109,6 @@ export const dragInteractionX = ({
               or(lessThan(abs(dragY), distanceToSkip), greaterThan(dragY, 0))
             ),
             [
-              debug('returning to original position', dragY),
               set(clockConfig.toValue, 0),
               set(clockConfig.duration, returnDuration),
               set(yClockConfig.toValue, 0),
@@ -121,7 +118,6 @@ export const dragInteractionX = ({
               ])
             ],
             [
-              debug('here', transXValue),
               call([transXValue, dragY], reaction),
               cond(
                 and(
@@ -131,6 +127,7 @@ export const dragInteractionX = ({
                 // skip clock start
                 [
                   set(yClockConfig.duration, skipDuration),
+                  debug('starting Y clock', dragX),
                   startCardClock(
                     yClock,
                     yClockState,
@@ -151,6 +148,7 @@ export const dragInteractionX = ({
                     )
                   ),
                   set(clockConfig.duration, throwOutDuration),
+                  debug('starting x clock', dragX),
                   startCardClock(xClock, clockState, dragX)
                 ]
               )
@@ -178,6 +176,14 @@ export const dragInteractionX = ({
         )
       ])
     ]),
+    cond(
+      and(
+        eq(clockRunning(xClock), false),
+        eq(clockRunning(yClock), false),
+        eq(gestureState, State.END)
+      ),
+      set(gestureState, State.UNDETERMINED)
+    ),
     transXValue
   ])
 }
