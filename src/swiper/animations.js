@@ -6,7 +6,8 @@ import {
   throwOutDistance,
   returnDuration,
   distanceToSkip,
-  skipDistance
+  skipDistance,
+  yThrowOutDistance
   // YSpeedMultiplier,
   // XSpeedMultiplier
 } from './constants'
@@ -28,6 +29,7 @@ const {
   abs,
   and,
   lessThan,
+  lessOrEq,
   block,
   or,
   timing
@@ -101,7 +103,7 @@ export const dragInteraction = ({
           cond(
             // should return to original position ?
             and(
-              lessThan(abs(dragX), distanceToVote),
+              lessOrEq(abs(dragX), distanceToVote),
               or(lessThan(abs(dragY), distanceToSkip), greaterThan(dragY, 0))
             ),
             [
@@ -124,6 +126,7 @@ export const dragInteraction = ({
                 // skip clock start
                 [
                   set(yClockConfig.duration, throwOutDuration),
+                  set(yClockConfig.toValue, -yThrowOutDistance),
                   startCardClock(yClock, yClockState, dragY)
                 ],
                 // vote clock start

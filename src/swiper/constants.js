@@ -11,6 +11,7 @@ export const reactions = {
 
 export const distanceToVote = deviceWidth / 6
 export const throwOutDistance = deviceWidth
+export const yThrowOutDistance = deviceHeight * 2
 export const throwOutDuration = 400
 export const returnDuration = 100
 export const YSpeedMultiplier = 2
