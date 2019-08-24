@@ -6,9 +6,9 @@ import {
   throwOutDistance,
   returnDuration,
   distanceToSkip,
-  skipDistance,
-  YSpeedMultiplier,
-  XSpeedMultiplier
+  skipDistance
+  // YSpeedMultiplier,
+  // XSpeedMultiplier
 } from './constants'
 
 const {
@@ -90,10 +90,7 @@ export const dragInteraction = ({
   return block([
     cond(
       eq(gestureState, State.ACTIVE),
-      [
-        set(transXValue, multiply(dragX, XSpeedMultiplier)),
-        set(transYValue, multiply(dragY, YSpeedMultiplier))
-      ],
+      [set(transXValue, dragX), set(transYValue, dragY)],
       [
         cond(
           and(
@@ -127,11 +124,7 @@ export const dragInteraction = ({
                 // skip clock start
                 [
                   set(yClockConfig.duration, throwOutDuration),
-                  startCardClock(
-                    yClock,
-                    yClockState,
-                    multiply(dragY, new Value(YSpeedMultiplier))
-                  )
+                  startCardClock(yClock, yClockState, dragY)
                 ],
                 // vote clock start
                 [
@@ -144,11 +137,7 @@ export const dragInteraction = ({
                     )
                   ),
                   set(clockConfig.duration, throwOutDuration),
-                  startCardClock(
-                    xClock,
-                    clockState,
-                    multiply(dragX, XSpeedMultiplier)
-                  )
+                  startCardClock(xClock, clockState, dragX)
                 ]
               )
             ]
