@@ -30,6 +30,7 @@ const {
   and,
   lessThan,
   block,
+  interpolate,
   or,
   timing
 } = Animated
@@ -55,7 +56,7 @@ const yClockState = {
 
 const yClockConfig = {
   duration: new Value(returnDuration),
-  toValue: new Value(skipDistance),
+  toValue: new Value(-skipDistance),
   easing: Easing.inOut(Easing.ease)
 }
 
@@ -172,8 +173,15 @@ export const dragInteractionX = ({
                 ),
                 // skip clock start
                 [
-                  set(clockConfig.duration, skipDuration),
-                  startCardClock(yClock, yClockState, dragY)
+                  set(yClockConfig.duration, skipDuration),
+                  startCardClock(
+                    yClock,
+                    yClockState,
+                    interpolate(dragY, {
+                      inputRange: [-9999, 0],
+                      outputRange: [-YSpeedMultiplier * 9999, 0]
+                    })
+                  )
                 ],
                 // vote clock start
                 [
