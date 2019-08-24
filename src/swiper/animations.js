@@ -139,6 +139,7 @@ export const dragInteractionX = ({
       eq(gestureState, State.ACTIVE),
       [set(transXValue, multiply(dragX, XSpeedMultiplier))],
       [
+        // debug('is not skipping', new Value(distanceToSkip)),
         cond(
           and(
             eq(gestureState, State.END),
@@ -147,7 +148,10 @@ export const dragInteractionX = ({
           ),
           cond(
             // should return to original position
-            noAction(dragX, dragY),
+            and(
+              lessThan(abs(dragX), distanceToVote),
+              and(lessThan(abs(dragY), distanceToSkip), lessThan(dragY, 0))
+            ),
             [
               set(clockConfig.toValue, 0),
               set(clockConfig.duration, returnDuration),
@@ -159,16 +163,29 @@ export const dragInteractionX = ({
             ],
             [
               debug('here', dragX),
-
-              set(clockConfig.duration, throwOutDuration),
-              [
-                set(
-                  clockConfig.toValue,
-                  cond(lessThan(dragX, 0), -throwOutDistance, throwOutDistance)
-                ),
-                call([transXValue, dragY], reaction),
-                startCardClock(xClock, clockState, dragX)
-              ]
+              call([transXValue, dragY], reaction),
+              cond(
+                greaterThan(abs(dragY), distanceToSkip),
+                lessThan(dragY, 0),
+                // skip clock start
+                [
+                  set(clockConfig.duration, skipDuration),
+                  startCardClock(yClock, yClockState, dragY)
+                ],
+                // vote clock start
+                [
+                  set(
+                    clockConfig.toValue,
+                    cond(
+                      lessThan(dragX, 0),
+                      -throwOutDistance,
+                      throwOutDistance
+                    )
+                  ),
+                  set(clockConfig.duration, throwOutDuration),
+                  startCardClock(xClock, clockState, dragX)
+                ]
+              )
             ]
           )
         )
