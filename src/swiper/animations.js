@@ -29,7 +29,6 @@ const {
   and,
   lessThan,
   block,
-  interpolate,
   or,
   timing
 } = Animated
@@ -119,7 +118,6 @@ export const dragInteraction = ({
               ])
             ],
             [
-              debug('here', dragX),
               call([dragX, dragY], reaction),
               cond(
                 and(
