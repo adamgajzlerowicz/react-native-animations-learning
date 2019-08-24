@@ -44,21 +44,6 @@ const startCardClock = (clock, state, startValue) =>
 
     startClock(clock)
   ])
-const xClock = new Clock()
-const yClock = new Clock()
-
-const yClockState = {
-  finished: new Value(0),
-  position: new Value(0),
-  time: new Value(0),
-  frameTime: new Value(0)
-}
-
-const yClockConfig = {
-  duration: new Value(returnDuration),
-  toValue: new Value(-skipDistance),
-  easing: Easing.inOut(Easing.ease)
-}
 
 export const noAction = (dragX, dragY) =>
   or(
@@ -75,6 +60,9 @@ export const dragInteractionX = ({
   transXValue,
   transYValue
 }) => {
+  const xClock = new Clock()
+  const yClock = new Clock()
+
   const clockState = {
     finished: new Value(0),
     position: new Value(0),
@@ -85,6 +73,19 @@ export const dragInteractionX = ({
   const clockConfig = {
     duration: new Value(0),
     toValue: new Value(0),
+    easing: Easing.inOut(Easing.ease)
+  }
+
+  const yClockState = {
+    finished: new Value(0),
+    position: new Value(0),
+    time: new Value(0),
+    frameTime: new Value(0)
+  }
+
+  const yClockConfig = {
+    duration: new Value(returnDuration),
+    toValue: new Value(-skipDistance),
     easing: Easing.inOut(Easing.ease)
   }
 
@@ -127,7 +128,6 @@ export const dragInteractionX = ({
                 // skip clock start
                 [
                   set(yClockConfig.duration, skipDuration),
-                  debug('starting Y clock', dragX),
                   startCardClock(
                     yClock,
                     yClockState,
@@ -148,7 +148,6 @@ export const dragInteractionX = ({
                     )
                   ),
                   set(clockConfig.duration, throwOutDuration),
-                  debug('starting x clock', dragX),
                   startCardClock(xClock, clockState, dragX)
                 ]
               )
@@ -172,7 +171,7 @@ export const dragInteractionX = ({
             greaterOrEq(abs(clockState.position), throwOutDistance),
             and(greaterThan(abs(dragY), distanceToSkip), lessThan(dragY, 0))
           ),
-          call([], nextSlide)
+          [call([], nextSlide), debug('calling it', dragY)]
         )
       ])
     ]),
