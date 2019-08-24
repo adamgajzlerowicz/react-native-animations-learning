@@ -8,8 +8,8 @@ import { PanGestureHandler, State } from 'react-native-gesture-handler'
 import Animated from 'react-native-reanimated'
 
 import { colors } from '../themes'
-import { dragInteractionX, dragInteractionY, noAction } from './animations'
-import { distanceToSkip, distanceToVote, reactions } from './constants'
+import { dragInteraction, noAction } from './animations'
+import { distanceToSkip, distanceToVote } from './constants'
 import { reaction } from './helpers'
 
 import Overlay from './overlay'
@@ -73,7 +73,7 @@ class App extends React.Component {
 
     this.state.items = items
 
-    this.translateX = dragInteractionX({
+    this.translateX = dragInteraction({
       dragX,
       dragY,
       gestureState,

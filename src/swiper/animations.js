@@ -50,7 +50,7 @@ export const noAction = (dragX, dragY) =>
     and(greaterThan(abs(dragY), distanceToSkip), lessThan(dragY, 0))
   )
 
-export const dragInteractionX = ({
+export const dragInteraction = ({
   dragX,
   dragY,
   gestureState,
