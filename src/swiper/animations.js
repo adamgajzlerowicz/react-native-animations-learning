@@ -144,7 +144,11 @@ export const dragInteraction = ({
                     )
                   ),
                   set(clockConfig.duration, throwOutDuration),
-                  startCardClock(xClock, clockState, dragX)
+                  startCardClock(
+                    xClock,
+                    clockState,
+                    multiply(dragX, XSpeedMultiplier)
+                  )
                 ]
               )
             ]
